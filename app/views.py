@@ -146,6 +146,32 @@ def edit():
     return render_template('edit.html',
         form = form)
 
+@app.route('/edit_post/<int:id>', methods = ['GET', 'POST'])
+@login_required
+def edit_post(id):
+    post = Post.query.get(id)
+    if post == None:
+        flash('Post not found.')
+        return redirect(url_for('index'))
+    if post.author.id != g.user.id:
+        flash('You cannot edit this post.')
+        return redirect(url_for('index'))
+    form = PostForm()
+    if form.validate_on_submit():
+        language = guessLanguage(form.post.data)
+        if language == 'UNKNOWN' or len(language) > 5:
+            language = ''
+        post.body = form.post.data
+        post.language = language
+        db.session.add(post)
+        db.session.commit()
+        flash(gettext('Your post has been updated!'))
+        return redirect(url_for('index'))
+    elif request.method != "POST":
+        form.post.data = post.body
+    return render_template('edit_post.html',
+        form = form)
+
 @app.route('/follow/<nickname>')
 @login_required
 def follow(nickname):

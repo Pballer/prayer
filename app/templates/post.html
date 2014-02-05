@@ -16,6 +16,7 @@
             {% endif %}
             {% if post.author.id == g.user.id %}
             <div><a href="{{ url_for('delete', id = post.id) }}">{{ _('Delete') }}</a></div>
+            <div><a href="{{ url_for('edit_post', id = post.id) }}">{{ _('Edit post') }}</a></div>
             {% endif %}
         </td>
     </tr>
