@@ -27,12 +27,12 @@ WHOOSH_ENABLED = os.environ.get('HEROKU') is None
 DATABASE_QUERY_TIMEOUT = 0.5
 
 # email server
-MAIL_SERVER = '' # your mailserver
-MAIL_PORT = 25
+MAIL_SERVER = 'smtp.googlemail.com'
+MAIL_PORT = 465
 MAIL_USE_TLS = False
-MAIL_USE_SSL = False
-MAIL_USERNAME = 'you'
-MAIL_PASSWORD = 'your-password'
+MAIL_USE_SSL = True
+MAIL_USERNAME = 'gough.cory'
+MAIL_PASSWORD = 'A1!ghjkl'
 
 # available languages
 LANGUAGES = {
@@ -41,11 +41,11 @@ LANGUAGES = {
 }
 
 # microsoft translation service
-MS_TRANSLATOR_CLIENT_ID = '' # enter your MS translator app id here
-MS_TRANSLATOR_CLIENT_SECRET = '' # enter your MS translator app secret here
+MS_TRANSLATOR_CLIENT_ID = '02752774-b932-4b78-a8c7-bdaecdafaedf' # enter your MS translator app id here
+MS_TRANSLATOR_CLIENT_SECRET = 'NtOMNZpkfAcEiBoiMbMDwd2Qkr45Wm1xWBMTh0hgc90' # enter your MS translator app secret here
 
 # administrator list
-ADMINS = ['you@example.com']
+ADMINS = ['gough.cory@gmail.com']
 
 # pagination
 POSTS_PER_PAGE = 50

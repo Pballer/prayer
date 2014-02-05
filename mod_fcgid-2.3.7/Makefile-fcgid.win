@@ -1,0 +1,216 @@
+#
+# NMAKE Makefile for Microsoft Windows 
+#
+# Targets are:
+#   _apacher   - build Apache in Release mode
+#   _apached   - build Apache in Debug mode
+#   installr   - build and install a Release build
+#   installd   - build and install a Debug build
+#   clean      - remove (most) generated files
+#
+# The following install defaults may be customized;
+#
+#   Option      Default
+#   INSTDIR     /Apache22
+#
+# For example;
+#
+#   nmake -f Makefile-fcgid.win INSTDIR="d:/Program Files/Apache" installr
+#
+# Be aware that certain awk's will not accept backslashed names,
+# so the server root should be given in forward slashes (quoted),
+# preferably with the drive designation!
+
+!IF "$(INSTDIR)" == ""
+INSTDIR=\Apache22
+!ENDIF
+
+!IF EXIST("modules\fcgid\mod_fcgid.vcproj") \
+    && ([devenv /help > NUL 2>&1] == 0) \
+    && !defined(USEMAK) && !defined(USEDSW)
+USESLN=1
+USEMAK=0
+USEDSW=0
+!ELSEIF EXIST("modules\fcgid\mod_fcgid.mak") && !defined(USEDSW)
+USESLN=0
+USEMAK=1
+USEDSW=0
+!ELSE
+USESLN=0
+USEMAK=0
+USEDSW=1
+!ENDIF
+
+!IF ("$(CTARGET)" == "") && ($(USESLN) == 1)
+CTARGET=/build
+!ENDIF
+
+!IF "$(APACHE2_HOME)" == ""
+APACHE2_HOME=$(INSTDIR)
+!ENDIF
+
+!IF EXIST("$(APACHE2_HOME)\lib\libapr-2.lib")
+APACHE2_APRSFX=-2
+!ELSEIF EXIST("$(APACHE2_HOME)\lib\libapr-1.lib")
+APACHE2_APRSFX=-1
+!ELSEIF EXIST("$(APACHE2_HOME)\lib\libapr.lib")
+APACHE2_APRSFX=
+!ELSE
+!MESSAGE Point INSTDIR at the directory containing an already installed httpd
+!MESSAGE including build support directories of lib and include.  It must
+!MESSAGE include apr and apr-util.  mod_fcgid cannot build without these files!
+!ENDIF
+
+!IF "$(LONG)" == ""
+!MESSAGE
+!MESSAGE INSTDIR      = $(INSTDIR)
+!MESSAGE APACHE2_HOME = $(APACHE2_HOME)
+!MESSAGE
+!MESSAGE To change these options use 'nmake -f Makefile-fcgid.win [option=value]'
+!MESSAGE Example: nmake -f Makefile-fcgid.win
+!MESSAGE
+!ENDIF
+
+!IFNDEF MAKEOPT
+# Only default the behavior if MAKEOPT= is omitted
+!IFDEF _NMAKE_VER
+# Microsoft NMake options
+MAKEOPT=-nologo
+!ELSEIF "$(MAKE)" == "make"
+# Borland make options?  Not really supported (yet)
+MAKEOPT=-s -N
+!ENDIF
+!ENDIF
+
+_buildr: 
+	@$(MAKE) $(MAKEOPT) -f Makefile-fcgid.win \
+		INSTDIR="$(INSTDIR)" APACHE2_HOME="$(APACHE2_HOME)" \
+		SHORT=R LONG=Release _build
+
+_buildd: 
+	@$(MAKE) $(MAKEOPT) -f Makefile-fcgid.win \
+		INSTDIR="$(INSTDIR)" APACHE2_HOME="$(APACHE2_HOME)" \
+		SHORT=D LONG=Debug   _build
+
+installr: 
+	@$(MAKE) $(MAKEOPT) -f Makefile-fcgid.win \
+		INSTDIR="$(INSTDIR)" APACHE2_HOME="$(APACHE2_HOME)" \
+		SHORT=R LONG=Release _build _install
+
+installd: 
+	@$(MAKE) $(MAKEOPT) -f Makefile-fcgid.win \
+		INSTDIR="$(INSTDIR)" APACHE2_HOME="$(APACHE2_HOME)" \
+		SHORT=D LONG=Debug   _build _install
+
+clean:	_cleanr _cleand
+	-if exist Browse\. rd /s Browse < << > nul
+y
+<<
+
+!IF $(USEMAK) == 1
+
+_cleanr:
+	$(MAKE) $(MAKEOPT) -f Makefile-fcgid.win \
+		INSTDIR="$(INSTDIR)" APACHE2_HOME="$(APACHE2_HOME)" \
+		SHORT=R LONG=Release CTARGET=CLEAN _build
+
+_cleand:  
+	$(MAKE) $(MAKEOPT) -f Makefile-fcgid.win \
+		INSTDIR="$(INSTDIR)" APACHE2_HOME="$(APACHE2_HOME)" \
+		SHORT=D LONG=Debug   CTARGET=CLEAN _build
+
+_build:
+	echo Building Win32 $(LONG) targets ($(SHORT) suffixes)
+	cd modules\fcgid
+	 $(MAKE) $(MAKEOPT) -f mod_fcgid.mak CFG="mod_fcgid - Win32 $(LONG)" RECURSE=0 $(CTARGET)
+	cd ..\..
+
+!ELSEIF $(USESLN) == 1
+
+_cleanr:  
+	$(MAKE) $(MAKEOPT) -f Makefile-fcgid.win \
+		INSTDIR="$(INSTDIR)" APACHE2_HOME="$(APACHE2_HOME)" \
+		SHORT=R LONG=Release CTARGET="/clean" _build
+
+_cleand:  
+	$(MAKE) $(MAKEOPT) -f Makefile-fcgid.win \
+		INSTDIR="$(INSTDIR)" APACHE2_HOME="$(APACHE2_HOME)" \
+		SHORT=D LONG=Debug   CTARGET="/clean" _build
+
+_build:
+	echo Building Win32 $(LONG) targets ($(SHORT) suffixes)
+	devenv mod_fcgid.sln /useenv $(CTARGET) $(LONG) /project mod_fcgid
+
+!ELSE
+
+_cleanr:  
+	@$(MAKE) $(MAKEOPT) -f Makefile-fcgid.win \
+		INSTDIR="$(INSTDIR)" APACHE2_HOME="$(APACHE2_HOME)" \
+		SHORT=R LONG=Release CTARGET="/CLEAN" _build
+
+_cleand:  
+	@$(MAKE) $(MAKEOPT) -f Makefile-fcgid.win \
+		INSTDIR="$(INSTDIR)" APACHE2_HOME="$(APACHE2_HOME)" \
+		SHORT=D LONG=Debug   CTARGET="/CLEAN" _build
+
+_build:
+	@echo Building Win32 $(LONG) targets ($(SHORT) suffixes)
+	@msdev mod_fcgid.dsw /USEENV /MAKE "mod_fcgid - Win32 $(LONG)" $(CTARGET)
+
+!ENDIF
+
+httpd_conffile=$(INSTDIR)\conf\httpd.conf
+httpd_origconffile=$(INSTDIR)\conf\original\httpd.conf
+
+_install:
+	echo Y >.y
+	echo A >.A
+	-mkdir "$(INSTDIR)"
+	-mkdir "$(INSTDIR)\conf"
+	-mkdir "$(INSTDIR)\conf\original"
+!IFDEF HAVE_HTTPD_FCGID_CONF
+	-mkdir "$(INSTDIR)\conf\extra"
+	-mkdir "$(INSTDIR)\conf\original\extra"
+!ENDIF
+!IFDEF HAVE_MOD_FCGID_H
+	-mkdir "$(INSTDIR)\include"
+!ENDIF
+	-mkdir "$(INSTDIR)\manual"
+	-mkdir "$(INSTDIR)\modules"
+	copy CHANGES-FCGID "$(INSTDIR)\CHANGES-FCGID.txt" <.y
+	copy LICENSE-FCGID "$(INSTDIR)\LICENSE-FCGID.txt" <.y
+	copy NOTICE-FCGID  "$(INSTDIR)\NOTICE-FCGID.txt" <.y
+	copy README-FCGID  "$(INSTDIR)\README-FCGID.txt" <.y
+	copy modules\fcgid\$(LONG)\mod_fcgid.so  "$(INSTDIR)\modules" <.y
+	copy modules\fcgid\$(LONG)\mod_fcgid.pdb "$(INSTDIR)\modules" <.y
+	xcopy docs\manual      "$(INSTDIR)\manual" /s /d < .a
+!IFDEF HAVE_MOD_FCGID_H
+	copy include\mod_fcgid.h "$(INSTDIR)\include" < .y > nul
+!ENDIF
+	for %f in ("$(httpd_origconffile)" "$(httpd_conffile)") do \
+	    if exist "%f" ( \
+		awk -f build/addloadexample.awk -v MODULE=fcgid -v DSO=.so \
+!IFDEF HAVE_HTTPD_FCGID_CONF
+		    -v EXAMPLECONF=conf/extra/httpd-fcgid.conf \
+!ENDIF
+		    -v LIBPATH=modules "%f" > "%f.new" && \
+		move "%f" "%f.bak" && move "%f.new" "%f" \
+	    )
+!IFDEF HAVE_HTTPD_FCGID_CONF
+	copy docs\conf\extra\httpd-fcgid.conf "$(INSTDIR)\conf\original\extra\httpd-fcgid.conf" <.y
+	awk -f << docs\conf\extra\httpd-fcgid.conf > "$(INSTDIR)\conf\original\extra\httpd-fcgid.conf"
+/^\#@@LoadFcgidModules@@/ { next; }
+{ sub(/@exp_runtimedir@/, "logs");
+  sub(/@exp_sysconfdir@/, "conf");
+  sub(/@rel_sysconfdir@/, "conf");
+  sub(/@rel_logfiledir@/, "logs");
+  print $0;
+}
+<<
+	if not exist "$(INSTDIR)\conf\extra\httpd-fcgid.conf" \
+	    copy "$(INSTDIR)\conf\original\extra\httpd-fcgid.conf" \
+		 "$(INSTDIR)\conf\extra\httpd-fcgid.conf" <.y
+!ENDIF
+	del .y
+	del .a
+

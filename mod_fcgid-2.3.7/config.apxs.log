@@ -1,0 +1,18 @@
+Detecting features
+rm -f *.o *.lo *.slo *.obj *.a *.la conftest_foofn.c conftest_sys_file_h.c conftest_sys_mman_h.c conftest_sys_mutex_h.c conftest_sys_shm_h.c *.loT conftest_foofn conftest_sys_file_h conftest_sys_mman_h conftest_sys_mutex_h conftest_sys_shm_h
+rm -rf .libs
+/usr/lib/apr-1/build/libtool --silent --mode=compile gcc -pthread  -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector --param=ssp-buffer-size=4 -m32 -march=i686 -mtune=atom -fasynchronous-unwind-tables -Wformat-security -fno-strict-aliasing  -DLINUX=2 -D_REENTRANT -D_GNU_SOURCE -D_LARGEFILE64_SOURCE    -I/usr/include/httpd -I. -I/usr/include/apr-1 -fPIE -prefer-non-pic -static -c conftest_sys_file_h.c && touch conftest_sys_file_h.lo
+rm -f *.o *.lo *.slo *.obj *.a *.la conftest_foofn.c conftest_sys_file_h.c conftest_sys_mman_h.c conftest_sys_mutex_h.c conftest_sys_shm_h.c *.loT conftest_foofn conftest_sys_file_h conftest_sys_mman_h conftest_sys_mutex_h conftest_sys_shm_h
+rm -rf .libs
+/usr/lib/apr-1/build/libtool --silent --mode=compile gcc -pthread  -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector --param=ssp-buffer-size=4 -m32 -march=i686 -mtune=atom -fasynchronous-unwind-tables -Wformat-security -fno-strict-aliasing  -DLINUX=2 -D_REENTRANT -D_GNU_SOURCE -D_LARGEFILE64_SOURCE    -I/usr/include/httpd -I. -I/usr/include/apr-1 -fPIE -prefer-non-pic -static -c conftest_sys_mman_h.c && touch conftest_sys_mman_h.lo
+rm -f *.o *.lo *.slo *.obj *.a *.la conftest_foofn.c conftest_sys_file_h.c conftest_sys_mman_h.c conftest_sys_mutex_h.c conftest_sys_shm_h.c *.loT conftest_foofn conftest_sys_file_h conftest_sys_mman_h conftest_sys_mutex_h conftest_sys_shm_h
+rm -rf .libs
+/usr/lib/apr-1/build/libtool --silent --mode=compile gcc -pthread  -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector --param=ssp-buffer-size=4 -m32 -march=i686 -mtune=atom -fasynchronous-unwind-tables -Wformat-security -fno-strict-aliasing  -DLINUX=2 -D_REENTRANT -D_GNU_SOURCE -D_LARGEFILE64_SOURCE    -I/usr/include/httpd -I. -I/usr/include/apr-1 -fPIE -prefer-non-pic -static -c conftest_sys_mutex_h.c && touch conftest_sys_mutex_h.lo
+conftest_sys_mutex_h.c:1:23: error: sys/mutex.h: No such file or directory
+make: *** [conftest_sys_mutex_h.lo] Error 1
+rm -f *.o *.lo *.slo *.obj *.a *.la conftest_foofn.c conftest_sys_file_h.c conftest_sys_mman_h.c conftest_sys_mutex_h.c conftest_sys_shm_h.c *.loT conftest_foofn conftest_sys_file_h conftest_sys_mman_h conftest_sys_mutex_h conftest_sys_shm_h
+rm -rf .libs
+/usr/lib/apr-1/build/libtool --silent --mode=compile gcc -pthread  -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector --param=ssp-buffer-size=4 -m32 -march=i686 -mtune=atom -fasynchronous-unwind-tables -Wformat-security -fno-strict-aliasing  -DLINUX=2 -D_REENTRANT -D_GNU_SOURCE -D_LARGEFILE64_SOURCE    -I/usr/include/httpd -I. -I/usr/include/apr-1 -fPIE -prefer-non-pic -static -c conftest_sys_shm_h.c && touch conftest_sys_shm_h.lo
+rm -f *.o *.lo *.slo *.obj *.a *.la conftest_foofn.c conftest_sys_file_h.c conftest_sys_mman_h.c conftest_sys_mutex_h.c conftest_sys_shm_h.c *.loT conftest_foofn conftest_sys_file_h conftest_sys_mman_h conftest_sys_mutex_h conftest_sys_shm_h
+rm -rf .libs
+rm -f .deps Makefile 

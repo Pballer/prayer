@@ -1,0 +1,119 @@
+# Microsoft Developer Studio Generated Dependency File, included by mod_fcgid.mak
+
+.\fcgid_bridge.c : \
+	".\fcgid_bridge.h"\
+	".\fcgid_bucket.h"\
+	".\fcgid_conf.h"\
+	".\fcgid_config.h"\
+	".\fcgid_global.h"\
+	".\fcgid_pm.h"\
+	".\fcgid_proc.h"\
+	".\fcgid_proctbl.h"\
+	".\fcgid_protocol.h"\
+	".\fcgid_spawn_ctl.h"\
+	
+
+.\fcgid_bucket.c : \
+	".\fcgid_bridge.h"\
+	".\fcgid_bucket.h"\
+	".\fcgid_conf.h"\
+	".\fcgid_config.h"\
+	".\fcgid_global.h"\
+	".\fcgid_proc.h"\
+	".\fcgid_proctbl.h"\
+	".\fcgid_protocol.h"\
+	
+
+.\fcgid_conf.c : \
+	".\fcgid_conf.h"\
+	".\fcgid_config.h"\
+	".\fcgid_global.h"\
+	
+
+!IF  "$(CFG)" == "mod_fcgid - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "mod_fcgid - Win32 Debug"
+
+!ENDIF 
+
+.\fcgid_filter.c : \
+	".\fcgid_bucket.h"\
+	".\fcgid_conf.h"\
+	".\fcgid_config.h"\
+	".\fcgid_filter.h"\
+	".\fcgid_global.h"\
+	".\fcgid_proc.h"\
+	".\fcgid_proctbl.h"\
+	
+
+.\fcgid_pm_main.c : \
+	".\fcgid_conf.h"\
+	".\fcgid_config.h"\
+	".\fcgid_global.h"\
+	".\fcgid_pm.h"\
+	".\fcgid_pm_main.h"\
+	".\fcgid_proc.h"\
+	".\fcgid_proctbl.h"\
+	".\fcgid_spawn_ctl.h"\
+	
+
+.\fcgid_pm_win.c : \
+	".\fcgid_conf.h"\
+	".\fcgid_config.h"\
+	".\fcgid_global.h"\
+	".\fcgid_pm.h"\
+	".\fcgid_pm_main.h"\
+	".\fcgid_proctbl.h"\
+	".\fcgid_spawn_ctl.h"\
+	
+
+.\fcgid_proc_win.c : \
+	".\fcgid_conf.h"\
+	".\fcgid_config.h"\
+	".\fcgid_global.h"\
+	".\fcgid_pm.h"\
+	".\fcgid_proc.h"\
+	".\fcgid_proctbl.h"\
+	".\fcgid_protocol.h"\
+	".\fcgid_spawn_ctl.h"\
+	
+
+.\fcgid_proctbl_win.c : \
+	".\fcgid_conf.h"\
+	".\fcgid_config.h"\
+	".\fcgid_global.h"\
+	".\fcgid_proctbl.h"\
+	
+
+.\fcgid_protocol.c : \
+	".\fcgid_config.h"\
+	".\fcgid_global.h"\
+	".\fcgid_protocol.h"\
+	
+
+.\fcgid_spawn_ctl.c : \
+	".\fcgid_conf.h"\
+	".\fcgid_config.h"\
+	".\fcgid_global.h"\
+	".\fcgid_pm.h"\
+	".\fcgid_proctbl.h"\
+	".\fcgid_spawn_ctl.h"\
+	
+
+.\mod_fcgid.c : \
+	".\fcgid_bridge.h"\
+	".\fcgid_conf.h"\
+	".\fcgid_config.h"\
+	".\fcgid_filter.h"\
+	".\fcgid_global.h"\
+	".\fcgid_pm.h"\
+	".\fcgid_proctbl.h"\
+	".\fcgid_protocol.h"\
+	".\fcgid_spawn_ctl.h"\
+	
+
+.\mod_fcgid.rc : \
+	".\fcgid_conf.h"\
+	".\fcgid_config.h"\
+	".\fcgid_global.h"\
+	

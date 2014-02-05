@@ -1,0 +1,71 @@
+##
+##  Makefile.apxs -- Feature test procedures for mod_fcgid Apache module
+##
+##  Do not use this target; ./configure.apxs from the mod_fcgid dir root
+##
+ 
+# top_builddir and top_srcdir are misnomers, because build/*.mk
+# scripts expect it them be the parent of the build directory,
+# and fail to trust the installbuilddir.
+exp_installbuilddir=$(shell $(APXS) -q exp_installbuilddir)
+top_srcdir=$(installbuilddir)/..
+top_builddir=$(installbuilddir)/..
+
+fcgid_builddir=..
+fcgid_srcdir=..
+builddir=.
+srcdir=.
+
+CLEAN_TARGETS = conftest_foofn.c \
+                conftest_sys_file_h.c \
+                conftest_sys_mman_h.c \
+                conftest_sys_mutex_h.c \
+                conftest_sys_shm_h.c \
+		*.loT
+TARGETS       = conftest_foofn \
+                conftest_sys_file_h \
+                conftest_sys_mman_h \
+                conftest_sys_mutex_h \
+                conftest_sys_shm_h
+
+PROGRAM_LDADD        = 
+PROGRAM_DEPENDENCIES = 
+
+include $(exp_installbuilddir)/rules.mk
+
+# Function checks follow this pattern; one to execute, one to create source
+# Header file checks simply validate that compilation into an .lo succeeds
+# TODO When the first function test is added, hijack conftest_foofn
+
+conftest_foofn: conftest_foofn.lo
+	$(LINK) conftest_foofn.lo
+
+conftest_sys_file_h: conftest_sys_file_h.lo
+	@echo "success" > $@
+
+conftest_sys_mman_h: conftest_sys_mman_h.lo
+	@echo "success" > $@
+
+conftest_sys_mutex_h: conftest_sys_mutex_h.lo
+	@echo "success" > $@
+
+conftest_sys_shm_h: conftest_sys_shm_h.lo
+	@echo "success" > $@
+
+conftest_foofn.c:
+	@echo "#include <sys/types.h>" > $@
+	@echo "#include <sys/stat.h>" >> $@
+	@echo "int main() { return foofn(2, 0644); }" >> $@
+
+conftest_sys_file_h.c:
+	@echo "#include <sys/file.h>" > $@
+
+conftest_sys_mman_h.c:
+	@echo "#include <sys/mman.h>" > $@
+
+conftest_sys_mutex_h.c:
+	@echo "#include <sys/mutex.h>" > $@
+
+conftest_sys_shm_h.c:
+	@echo "#include <sys/shm.h>" > $@
+

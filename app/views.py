@@ -17,7 +17,9 @@ def load_user(id):
 
 @babel.localeselector
 def get_locale():
-    return request.accept_languages.best_match(LANGUAGES.keys())
+    headers = request.headers.get('User-Agent')
+    app.logger.info('Header info: ' + headers)
+    return request.accept_languages.best_match(LANGUAGES.keys()) or 'en'
     
 @app.before_request
 def before_request():
