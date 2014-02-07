@@ -13,6 +13,8 @@ followers = db.Table('followers',
 )
 
 class User(db.Model):
+    __searchable__ = ['nickname', 'email']
+
     id = db.Column(db.Integer, primary_key = True)
     nickname = db.Column(db.String(64), unique = True)
     email = db.Column(db.String(120), index = True, unique = True)
@@ -91,4 +93,5 @@ class Post(db.Model):
         
 if WHOOSH_ENABLED:
     import flask.ext.whooshalchemy as whooshalchemy
+    whooshalchemy.whoosh_index(app, User)
     whooshalchemy.whoosh_index(app, Post)

@@ -231,15 +231,24 @@ def delete(id):
 def search():
     if not g.search_form.validate_on_submit():
         return redirect(url_for('index'))
-    return redirect(url_for('search_results', query = g.search_form.search.data))
+    return redirect(url_for('search_results', query_type = g.search_form.search_type.data, query = g.search_form.search.data))
 
-@app.route('/search_results/<query>')
+@app.route('/search_results/<query_type>/<query>')
 @login_required
-def search_results(query):
-    results = Post.query.whoosh_search(query, MAX_SEARCH_RESULTS).all()
-    return render_template('search_results.html',
-        query = query,
-        results = results)
+def search_results(query_type, query):
+    if query_type == 'User':
+        results = User.query.whoosh_search('%s* OR *%s* OR *%s' % (query, query, query), MAX_SEARCH_RESULTS).all()
+        print "These are the search results:"
+        print results
+        return render_template('user_search.html',
+            users = results)
+    elif query_type == 'Post':
+        results = Post.query.whoosh_search(query, MAX_SEARCH_RESULTS).all()
+        return render_template('search_results.html',
+            query = query,
+            results = results)
+    else:
+        return redirect(url_for('index'))
 
 @app.route('/translate', methods = ['POST'])
 @login_required

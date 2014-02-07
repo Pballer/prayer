@@ -1,0 +1,9 @@
+<!-- extend base layout -->
+{% extends "base.html" %}
+
+{% block content %}
+{% include 'flash.html' %}
+{% for user in users %}
+    {% include 'less_user.html' %}
+{% endfor %}
+{% endblock %}

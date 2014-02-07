@@ -54,7 +54,11 @@
             </ul>
           <div class="nav-collapse collapse">
             {% if g.user.is_authenticated() and g.search_enabled %}
-            <form class="navbar-search pull-right" action="{{url_for('search')}}" method="post" name="search">{{g.search_form.hidden_tag()}}{{g.search_form.search(size=20,placeholder=_('Search'),class="search-query")}}</form>
+            <form class="well form-inline" action="{{url_for('search')}}" method="post" name="search">
+                {{g.search_form.hidden_tag()}}
+                {{g.search_form.search(size=20,placeholder=_('Search'),class="search-query")}}&nbsp;
+                {{g.search_form.search_type()}}
+            </form>
             {% endif %}
           </div>
         </div>

@@ -1,5 +1,5 @@
 from flask.ext.wtf import Form
-from wtforms import TextField, BooleanField, TextAreaField
+from wtforms import TextField, BooleanField, TextAreaField, SelectField
 from wtforms.validators import Required, Length
 from flask.ext.babel import gettext
 from app.models import User
@@ -35,3 +35,4 @@ class PostForm(Form):
     
 class SearchForm(Form):
     search = TextField('search', validators = [Required()])
+    search_type = SelectField('search_type', choices=[('User','Nickname or Email'), ('Post', 'Prayer Request')])
