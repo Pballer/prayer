@@ -238,8 +238,6 @@ def search():
 def search_results(query_type, query):
     if query_type == 'User':
         results = User.query.whoosh_search('%s* OR *%s* OR *%s' % (query, query, query), MAX_SEARCH_RESULTS).all()
-        print "These are the search results:"
-        print results
         return render_template('user_search.html',
             users = results)
     elif query_type == 'Post':
