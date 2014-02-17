@@ -1,0 +1,28 @@
+<div class="well">
+    <form class="form-horizontal" action="{{url_for('search')}}" method="post" name="search">
+        {{g.search_form.hidden_tag()}}
+        <div class="control-group{% if g.search_form.errors.subject %} error{% endif %}">
+            <label class="control-label" for="search">{{ _('Search:')}}</label>
+            <div class="controls">
+                {{ g.search_form.search(size = 30, class = "span4") }}
+                {% for error in g.search_form.errors.search %}
+                    <span class="help-inline">[{{error}}]</span><br>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="control-group{% if g.search_form.errors.search_type %} error{% endif %}">
+            <label class="control-label" for="search_type">{{ _('Search type:') }}</label>
+            <div class="controls">
+                {{ g.search_form.search_type() }}
+                {% for error in g.search_form.errors.search_type %}
+                    <span class="help-inline">[{{error}}]</span><br>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="control-group">
+            <div class="controls">
+                <input class="btn btn-primary" type="submit" value="{{ _('Search!') }}">
+            </div>
+        </div>
+    </form>
+</div>

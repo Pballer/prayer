@@ -28,6 +28,7 @@ class User(db.Model):
         secondaryjoin = (followers.c.followed_id == id), 
         backref = db.backref('followers', lazy = 'dynamic'), 
         lazy = 'dynamic')
+    comments = db.relationship('Comment', backref = 'author', lazy = 'dynamic')
 
     @staticmethod
     def make_valid_nickname(nickname):
@@ -80,17 +81,30 @@ class User(db.Model):
         return '<User %r>' % (self.nickname)    
         
 class Post(db.Model):
-    __searchable__ = ['body']
+    __searchable__ = ['subject','body']
     
     id = db.Column(db.Integer, primary_key = True)
+    subject = db.Column(db.String(140))
     body = db.Column(db.String(140))
     timestamp = db.Column(db.DateTime)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     language = db.Column(db.String(5))
-    
+    comments = db.relationship('Comment', backref = 'op', lazy = 'dynamic')
+
     def __repr__(self): # pragma: no cover
         return '<Post %r>' % (self.body)
         
+class Comment(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    body = db.Column(db.String(140))
+    timestamp = db.Column(db.DateTime)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    post_id = db.Column(db.Integer, db.ForeignKey('post.id'))
+    language = db.Column(db.String(5))
+
+    def __repr__(self): # pragma: no cover
+        return '<Comment %r>' % (self.body)
+
 if WHOOSH_ENABLED:
     import flask.ext.whooshalchemy as whooshalchemy
     whooshalchemy.whoosh_index(app, User)

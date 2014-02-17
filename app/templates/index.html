@@ -7,10 +7,19 @@
 <div class="well">
     <form class="form-horizontal" action="" method="post" name="post">
         {{form.hidden_tag()}}
+        <div class="control-group{% if form.errors.subject %} error{% endif %}">
+            <label class="control-label" for="subject">{{ _('Subject:')}}</label>
+            <div class="controls">
+                {{ form.subject(size = 30, class = "span4") }}
+                {% for error in form.errors.subject %}
+                    <span class="help-inline">[{{error}}]</span><br>
+                {% endfor %}
+            </div>
+        </div>
         <div class="control-group{% if form.errors.post %} error{% endif %}">
             <label class="control-label" for="post">{{ _('Say something:') }}</label>
             <div class="controls">
-                {{ form.post(size = 30, maxlength = 140) }}
+                {{ form.post(cols = 64, rows = 4, class = "span4") }}
                 {% for error in form.errors.post %}
                     <span class="help-inline">[{{error}}]</span><br>
                 {% endfor %}

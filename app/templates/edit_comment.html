@@ -1,0 +1,10 @@
+<!-- extend base layout -->
+{% extends "base.html" %}
+
+{% block content %}
+<h1>{{ _('Edit your comment') }}</h1>
+{% include 'flash.html' %}
+<div class="well">
+    {% include 'comment_form.html' %}
+</div>
+{% endblock %}

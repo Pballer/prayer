@@ -31,8 +31,12 @@ class EditForm(Form):
         return True
         
 class PostForm(Form):
-    post = TextField('post', validators = [Required()])
+    subject = TextField('subject', validators = [Required(), Length(min = 1, max = 140)])
+    post = TextAreaField('post', validators = [Required(), Length(min = 1, max = 140)])
+
+class CommentForm(Form):
+    comment = TextAreaField('comment', validators = [Required(), ])
     
 class SearchForm(Form):
-    search = TextField('search', validators = [Required()])
+    search = TextField('search', validators = [Required(), Length(min = 1, max = 80)])
     search_type = SelectField('search_type', choices=[('User','Nickname or Email'), ('Post', 'Prayer Request')])

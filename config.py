@@ -48,5 +48,5 @@ MS_TRANSLATOR_CLIENT_SECRET = 'NtOMNZpkfAcEiBoiMbMDwd2Qkr45Wm1xWBMTh0hgc90' # en
 ADMINS = ['gough.cory@gmail.com']
 
 # pagination
-POSTS_PER_PAGE = 50
+POSTS_PER_PAGE = 5
 MAX_SEARCH_RESULTS = 50

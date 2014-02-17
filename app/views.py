@@ -3,8 +3,8 @@ from flask.ext.login import login_user, logout_user, current_user, login_require
 from flask.ext.sqlalchemy import get_debug_queries
 from flask.ext.babel import gettext
 from app import app, db, lm, oid, babel
-from forms import LoginForm, EditForm, PostForm, SearchForm
-from models import User, ROLE_USER, ROLE_ADMIN, Post
+from forms import LoginForm, EditForm, PostForm, SearchForm, CommentForm
+from models import User, ROLE_USER, ROLE_ADMIN, Post, Comment
 from datetime import datetime
 from emails import follower_notification
 from guess_language import guessLanguage
@@ -58,7 +58,8 @@ def index(page = 1):
         language = guessLanguage(form.post.data)
         if language == 'UNKNOWN' or len(language) > 5:
             language = ''
-        post = Post(body = form.post.data,
+        post = Post(subject = form.subject.data,
+            body = form.post.data,
             timestamp = datetime.utcnow(),
             author = g.user,
             language = language)
@@ -146,9 +147,10 @@ def edit():
     return render_template('edit.html',
         form = form)
 
-@app.route('/edit_post/<int:id>', methods = ['GET', 'POST'])
+@app.route('/edit-post/<int:id>', methods = ['GET', 'POST'])
+@app.route('/edit-post/<int:id>/<int:page>/', methods = ['GET', 'POST'])
 @login_required
-def edit_post(id):
+def edit_post(id, page = 1):
     post = Post.query.get(id)
     if post == None:
         flash('Post not found.')
@@ -161,6 +163,7 @@ def edit_post(id):
         language = guessLanguage(form.post.data)
         if language == 'UNKNOWN' or len(language) > 5:
             language = ''
+        post.subject = form.subject.data
         post.body = form.post.data
         post.language = language
         db.session.add(post)
@@ -168,9 +171,39 @@ def edit_post(id):
         flash(gettext('Your post has been updated!'))
         return redirect(url_for('index'))
     elif request.method != "POST":
+        form.subject.data = post.subject
         form.post.data = post.body
+    comments = post.comments.order_by(Comment.timestamp.desc()).paginate(page, POSTS_PER_PAGE, False)
     return render_template('edit_post.html',
-        form = form)
+        post = post,
+        form = form,
+        comments = comments)
+@app.route('/edit-comment/<int:id>', methods = ['GET', 'POST'])
+@app.route('/edit-comment/<int:id>/<int:page>', methods = ['GET', 'POST'])
+def edit_comment(id, page = 1):
+    comment  = Comment.query.get(id)
+    if comment == None:
+        flash(gettext('Comment not found'))
+        return redirect(url_for('index'))
+    if comment.author.id != g.user.id:
+        flash(gettext('You cannont edit this comment'))
+        return redirect(url_for('index'))
+    form = CommentForm()
+    if form.validate_on_submit():
+        language = guessLanguage(form.comment.data)
+        if language == 'UNKNOWN' or len(language) > 5:
+            language = ''
+        comment.body = form.comment.data
+        comment.language = language
+        db.session.add(comment)
+        db.session.commit()
+        flash(gettext('Your comment has been updated!'))
+        return redirect(url_for('post',id = comment.op.id,page = page))
+    elif request.method != "POST":
+        form.comment.data = comment.body
+    return render_template('edit_comment.html',
+        form = form) 
+
 
 @app.route('/follow/<nickname>')
 @login_required
@@ -221,21 +254,59 @@ def delete(id):
     if post.author.id != g.user.id:
         flash('You cannot delete this post.')
         return redirect(url_for('index'))
+    comments = post.comments.all()
+    # Delete all comments if they exist.
+    if comments:
+        for comment in comments:
+            db.session.delete(comment)
     db.session.delete(post)
     db.session.commit()
     flash('Your post has been deleted.')
     return redirect(url_for('index'))
     
+@app.route('/delete-comment/<int:id>')
+@login_required
+def delete_comment(id):
+    comment = Comment.query.get(id)
+    if comment == None:
+        flash('Comment not found.')
+        return redirect(url_for('index'))
+    if comment.author.id != g.user.id:
+        flash('You cannot delete this comment.')
+        return redirect(url_for('index'))
+    db.session.delete(comment)
+    db.session.commit()
+    flash('Your comment has been deleted.')
+    return redirect(request.args.get('next') or url_for('index'))
+
 @app.route('/search', methods = ['POST'])
 @login_required
 def search():
+    # If search type is not defined default to Post, For nav bar.
+    g.search_form.search_type.data = g.search_form.search_type.data
+    if g.search_form.search_type.data == "None":
+        g.search_form.search_type.data = 'Post'
+    query = g.search_form.search.data
     if not g.search_form.validate_on_submit():
         return redirect(url_for('index'))
-    return redirect(url_for('search_results', query_type = g.search_form.search_type.data, query = g.search_form.search.data))
+    if g.search_form.search_type.data == 'User':
+        results = User.query.whoosh_search('%s* OR *%s* OR *%s' % (query, query, query), MAX_SEARCH_RESULTS).all()
+        return render_template('user_search.html',
+            users = results)
+    elif g.search_form.search_type.data == 'Post':
+        results = Post.query.whoosh_search(query, MAX_SEARCH_RESULTS).all()
+        return render_template('search_results.html',
+            query = query,
+            results = results)
+    else:
+        return redirect(url_for('index'))
+
+
+   # return redirect(url_for('search_results', query_type = g.search_form.search_type.data, query = g.search_form.search.data))
 
 @app.route('/search_results/<query_type>/<query>')
 @login_required
-def search_results(query_type, query):
+def search_results(query, query_type = 'Post'):
     if query_type == 'User':
         results = User.query.whoosh_search('%s* OR *%s* OR *%s' % (query, query, query), MAX_SEARCH_RESULTS).all()
         return render_template('user_search.html',
@@ -247,6 +318,35 @@ def search_results(query_type, query):
             results = results)
     else:
         return redirect(url_for('index'))
+
+@app.route('/post/<int:id>', methods = ['GET', 'POST'])
+@app.route('/post/<int:id>/<int:page>', methods = ['GET', 'POST'])
+@login_required
+def post(id, page = 1):
+    post = Post.query.get(id)
+    if post == None:
+        flash("Post not found")
+        return redirect(url_for('index'))
+    form = CommentForm()
+    if form.validate_on_submit():
+        language = guessLanguage(form.comment.data)
+        if language == 'UNKNOWN' or len(language) > 5:
+            language = ''
+        comment = Comment(body = form.comment.data,
+            timestamp = datetime.utcnow(),
+            author = g.user,
+            op = post,
+            language = language)
+        db.session.add(comment)
+        db.session.commit()
+        flash(gettext('Your comment was added!'))
+        return redirect(url_for('post', id = post.id))
+    comments = post.comments.order_by(Comment.timestamp.desc()).paginate(page, POSTS_PER_PAGE, False)
+    return render_template('post_comments.html',
+        post = post,
+        form = form,
+        comments = comments)
+
 
 @app.route('/translate', methods = ['POST'])
 @login_required
