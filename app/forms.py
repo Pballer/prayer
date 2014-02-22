@@ -34,6 +34,9 @@ class PostForm(Form):
     subject = TextField('subject', validators = [Required(), Length(min = 1, max = 140)])
     post = TextAreaField('post', validators = [Required(), Length(min = 1, max = 140)])
 
+class AnswerForm(Form):
+    answer = TextAreaField('answer', validators = [Required(), Length(min = 1, max = 140)])
+
 class CommentForm(Form):
     comment = TextAreaField('comment', validators = [Required(), ])
     

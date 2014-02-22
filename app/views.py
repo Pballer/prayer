@@ -3,7 +3,7 @@ from flask.ext.login import login_user, logout_user, current_user, login_require
 from flask.ext.sqlalchemy import get_debug_queries
 from flask.ext.babel import gettext
 from app import app, db, lm, oid, babel
-from forms import LoginForm, EditForm, PostForm, SearchForm, CommentForm
+from forms import LoginForm, EditForm, PostForm, SearchForm, CommentForm, AnswerForm
 from models import User, ROLE_USER, ROLE_ADMIN, Post, Comment
 from datetime import datetime
 from emails import follower_notification
@@ -347,6 +347,45 @@ def post(id, page = 1):
         form = form,
         comments = comments)
 
+@app.route('/answer/<int:id>', methods = ['GET', 'POST'])
+@login_required
+def answer(id):
+    post = Post.query.get(id)
+    if post == None:
+        flash("Post not found")
+        return redirect(url_for('index'))
+    if post.author.id != g.user.id:
+        flash("You cannot edit this post")
+        return redirect(url_for('index'))
+    form = AnswerForm()
+    if form.validate_on_submit():
+        post.answered = True
+        post.answer = form.answer.data
+        post.answer_time = datetime.utcnow()
+        db.session.add(post)
+        db.session.commit()
+        flash(gettext('Your answer was added!'))
+        return redirect(url_for('post', id = post.id))
+    form.answer.data = post.answer
+    return render_template('answer_post.html',
+        post = post,
+        form = form)
+
+@app.route('/unanswered/<int:id>', methods = ['GET', 'POST'])
+@login_required
+def unanswered(id):
+    post = Post.query.get(id)
+    if post == None:
+        flash("Post not found")
+        return redirect(url_for('index'))
+    if post.author.id != g.user.id:
+        flash("You cannot edit this post")
+        return redirect(url_for('index'))
+    post.answered = False
+    db.session.add(post)
+    db.session.commit()
+    flash(gettext('Your post has been marked as unanswered.'))
+    return redirect(url_for('post', id = post.id))
 
 @app.route('/translate', methods = ['POST'])
 @login_required

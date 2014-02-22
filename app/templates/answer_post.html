@@ -1,0 +1,12 @@
+<!-- extend base layout -->
+{% extends "base.html" %}
+
+{% block content %}
+{% include 'flash.html' %}
+<div class="well">
+    {% include 'post.html' %}
+</div>
+<div class="well">
+    {% include 'answer_form.html' %}
+</div>
+{% endblock %}

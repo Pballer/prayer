@@ -9,24 +9,36 @@
             <p style="padding:0px;border:0px;margin:0px;font-size: x-small">{{ _('%(nickname)s said %(when)s:', nickname = '<a href="%s">%s</a>' % (url_for('user', nickname = post.author.nickname), post.author.nickname), when = momentjs(post.timestamp).fromNow()) }}</p>
             {% endautoescape %}
             <p><span id="post{{post.id}}">{{post.body}}</span></p>
+            {% if post.answered %}
+                <p>{{ _('Answer:') }}<br>{{post.answer}}</p>
+            {% endif %}
+            <ul class="post-options">
             {% if post.language != None and post.language != '' and post.language != g.locale %}
-            <div>
-                <span id="translation{{post.id}}">
-                    <a href="javascript:translate('{{post.language}}', '{{g.locale}}', '#post{{post.id}}', '#translation{{post.id}}', '#loading{{post.id}}');">{{ _('Translate') }}</a>
-                </span>
-                <img id="loading{{post.id}}" style="display: none" src="/static/img/loading.gif">
-            </div>
+                <li> 
+                    <span id="translation{{post.id}}">
+                        <a href="javascript:translate('{{post.language}}', '{{g.locale}}', '#post{{post.id}}', '#translation{{post.id}}', '#loading{{post.id}}');">{{ _('Translate') }}</a>
+                    </span>
+                    <img id="loading{{post.id}}" style="display: none" src="/static/img/loading.gif">
+                </li>|
             {% endif %}
-        </td>
-        <td width="70px">        
             {% if post.author.id == g.user.id %}
-            <div>
-                <a href="{{ url_for('delete', id = post.id) }}">{{ _('Delete') }}</a>
-            </div>
-            <div>
-                <a href="{{ url_for('edit_post', id = post.id) }}">{{ _('Edit post') }}</a>
-            </div>
+                {% if not post.answered %}
+                <li>
+                    <a href="{{ url_for('answer', id = post.id) }}">{{ _('Answered?') }}</a>
+                </li>|
+                {% else %}
+                <li>
+                    <a href="{{ url_for('unanswered', id = post.id) }}">{{ _('Unanswered')}}</a>
+                </li>|
+                {% endif %}
+                <li>
+                    <a href="{{ url_for('edit_post', id = post.id) }}">{{ _('Edit post') }}</a>
+                </li>|
+                <li>
+                    <a href="{{ url_for('delete', id = post.id) }}">{{ _('Delete') }}</a>
+                </li>
             {% endif %}
+            </ul>
         </td>
     </tr>
 </table>

@@ -1,0 +1,17 @@
+<form class="form-horizontal" action="" method="post" name="answer">
+    {{form.hidden_tag()}}
+    <div class="control-group{% if form.errors.comment %} error{% endif %}">
+        <label class="control-label" for="comment">{{ _('Answer:')}}</label>
+        <div class="controls">
+            {{ form.answer(cols = 64, rows = 3, class='span4') }}
+            {% for error in form.errors.answer %}
+                <span class="help-inline">[{{error}}]</span><br>
+            {% endfor %}
+        </div>
+    </div> 
+    <div class="control-group">
+        <div class="controls">
+            <input class="btn btn-primary" type="submit" value="{{ _('Submit') }}">
+        </div>
+    </div>
+</form>
