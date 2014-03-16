@@ -31,8 +31,8 @@ MAIL_SERVER = 'smtp.googlemail.com'
 MAIL_PORT = 465
 MAIL_USE_TLS = False
 MAIL_USE_SSL = True
-MAIL_USERNAME = 'gough.cory'
-MAIL_PASSWORD = 'A1!ghjkl'
+MAIL_USERNAME = 'get from env'
+MAIL_PASSWORD = 'get from env'
 
 # available languages
 LANGUAGES = {
@@ -41,11 +41,11 @@ LANGUAGES = {
 }
 
 # microsoft translation service
-MS_TRANSLATOR_CLIENT_ID = '02752774-b932-4b78-a8c7-bdaecdafaedf' # enter your MS translator app id here
-MS_TRANSLATOR_CLIENT_SECRET = 'NtOMNZpkfAcEiBoiMbMDwd2Qkr45Wm1xWBMTh0hgc90' # enter your MS translator app secret here
+MS_TRANSLATOR_CLIENT_ID = 'get from env' # enter your MS translator app id here
+MS_TRANSLATOR_CLIENT_SECRET = 'get from env' # enter your MS translator app secret here
 
 # administrator list
-ADMINS = ['gough.cory@gmail.com']
+ADMINS = ['get from env']
 
 # pagination
 POSTS_PER_PAGE = 5
