@@ -1,0 +1,27 @@
+<!-- extend base layout -->
+{% extends "base.html" %}
+
+{% block content %}
+{% include 'flash.html' %}
+<p>{{ _('Invite your friends to your group!  Add a comma separated list of email addresses to the box below.') }}</p>
+<div class="well">
+    <form class="form-horizontal" action="" method="post" name="group_email">
+        {{form.hidden_tag()}}
+        <div class="control-group{% if form.errors.recipients %} error{% endif %}">
+            <label class="control-label" for="post">{{ _('Recipients:') }}</label>
+            <div class="controls">
+                {{ form.recipients(cols = 64, rows = 4, class = "span4") }}
+                {% for error in form.errors.recipients %}
+                    <span class="help-inline">[{{error}}]</span><br>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="control-group">
+            <div class="controls">
+                <input class="btn btn-primary" type="submit" value="{{ _('Send Email!') }}">
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
+

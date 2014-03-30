@@ -1,0 +1,13 @@
+<!-- extend base layout -->
+{% extends "base.html" %}
+
+{% block content %}
+{% include 'flash.html' %}
+{% include 'group_info.html' %}
+{% for user in pending_requests %}
+    {% autoescape false %}
+    <p>{{ _('%(approve)s or %(deny)s %(nickname)s', approve = '<a href="%s">Approve</a>' % (url_for('group_approve_user', nickname = user.nickname, group_id = group.id, approve = True)), deny = '<a href="%s">deny</a>' % (url_for ('group_approve_user', nickname = user.nickname,group_id = group.id, approve = False)), nickname = user.nickname) }}</p>
+    {% endautoescape %}
+{% endfor %}
+{% endblock %}
+

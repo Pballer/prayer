@@ -1,0 +1,80 @@
+<!-- extend base layout -->
+{% extends "base.html" %}
+
+{% block content %}
+{% include 'flash.html' %}
+<div class="well">
+    <form class="form-horizontal" action="" method="post" name="post">
+        {{form.hidden_tag()}}
+        <div class="control-group{% if form.errors.datetime %} error{% endif %}">
+            <label class="control-label" for="datetime">{{ _('Meet time:')}}</label>
+            <div class="controls">
+                {{ form.datetime(size = 30, class = "span4") }}
+                {% for error in form.errors.datetime %}
+                    <span class="help-inline">[{{error}}]</span><br>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="control-group{% if form.errors.address %} error{% endif %}">
+            <label class="control-label" for="post">{{ _('Street address:') }}</label>
+            <div class="controls">
+                {{ form.address(size = 30, class = "span4") }}
+                {% for error in form.errors.address %}
+                    <span class="help-inline">[{{error}}]</span><br>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="control-group{% if form.errors.address2 %} error{% endif %}">
+            <label class="control-label" for="post">{{ _('Street address 2:') }}</label>
+            <div class="controls">
+                {{ form.address2(size = 30, class = "span4") }}
+                {% for error in form.errors.address2 %}
+                    <span class="help-inline">[{{error}}]</span><br>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="control-group{% if form.errors.city %} error{% endif %}">
+            <label class="control-label" for="post">{{ _('City:') }}</label>
+            <div class="controls">
+                {{ form.city(size = 30, class = "span4") }}
+                {% for error in form.errors.city %}
+                    <span class="help-inline">[{{error}}]</span><br>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="control-group{% if form.errors.state %} error{% endif %}">
+            <label class="control-label" for="post">{{ _('State:') }}</label>
+            <div class="controls">
+                {{ form.state(size = 30, class = "span4") }}
+                {% for error in form.errors.state %}
+                    <span class="help-inline">[{{error}}]</span><br>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="control-group{% if form.errors.zipcode %} error{% endif %}">
+            <label class="control-label" for="post">{{ _('Zipcode:') }}</label>
+            <div class="controls">
+                {{ form.zipcode(size = 30, class = "span4") }}
+                {% for error in form.errors.zipcode %}
+                    <span class="help-inline">[{{error}}]</span><br>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="control-group{% if form.errors.directions %} error{% endif %}">
+            <label class="control-label" for="post">{{ _('Directions:') }}</label>
+            <div class="controls">
+                {{ form.directions(cols = 64, rows = 4, class = "span4") }}
+                {% for error in form.errors.directions %}
+                    <span class="help-inline">[{{error}}]</span><br>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="control-group">
+            <div class="controls">
+                <input class="btn btn-primary" type="submit" value="{{ _('Add Address') }}">
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
+

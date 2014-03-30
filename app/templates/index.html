@@ -2,49 +2,14 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>{{ _('Hi, %(nickname)s!', nickname = g.user.nickname) }}</h1>
+{% if g.user.is_authenticated() %}
+    <h4>{{ _('Hi, %(nickname)s!', nickname = g.user.nickname) }}</h4>
+{% else %}
+    <h4>{{ _('Welcome to PrayerFirst!') }}</h4>
+{% endif %}
 {% include 'flash.html' %}
-<div class="well">
-    <form class="form-horizontal" action="" method="post" name="post">
-        {{form.hidden_tag()}}
-        <div class="control-group{% if form.errors.subject %} error{% endif %}">
-            <label class="control-label" for="subject">{{ _('Subject:')}}</label>
-            <div class="controls">
-                {{ form.subject(size = 30, class = "span4") }}
-                {% for error in form.errors.subject %}
-                    <span class="help-inline">[{{error}}]</span><br>
-                {% endfor %}
-            </div>
-        </div>
-        <div class="control-group{% if form.errors.post %} error{% endif %}">
-            <label class="control-label" for="post">{{ _('Say something:') }}</label>
-            <div class="controls">
-                {{ form.post(cols = 64, rows = 4, class = "span4") }}
-                {% for error in form.errors.post %}
-                    <span class="help-inline">[{{error}}]</span><br>
-                {% endfor %}
-            </div>
-        </div>
-        <div class="control-group">
-            <div class="controls">
-                <input class="btn btn-primary" type="submit" value="{{ _('Post!') }}">
-            </div>
-        </div>
-    </form>
+<div class="custom-well">
+    <p class="no-margin">{{ _('Start praying for the list below or ') }}<a href="{{ url_for('post_prayer') }}">{{ _('post your own!') }}</a></p>
 </div>
-{% for post in posts.items %}
-    {% include 'post.html' %}
-{% endfor %}
-<ul class="pager">
-    {% if posts.has_prev %}
-    <li class="previous"><a href="{{ url_for('index', page = posts.prev_num) }}">{{ _('Newer posts') }}</a></li>
-    {% else %}
-    <li class="previous disabled"><a href="#">{{ _('Newer posts') }}</a></li>
-    {% endif %}
-    {% if posts.has_next %}
-    <li class="next"><a href="{{ url_for('index', page = posts.next_num) }}">{{ _('Older posts') }}</a></li>
-    {% else %}
-    <li class="next disabled"><a href="#">{{ _('Older posts') }}</a></li>
-    {% endif %}
-</ul>
+{% include 'list_posts.html' %}
 {% endblock %}

@@ -25,7 +25,13 @@ if not app.debug and MAIL_SERVER != '':
     credentials = None
     if MAIL_USERNAME or MAIL_PASSWORD:
         credentials = (MAIL_USERNAME, MAIL_PASSWORD)
-    mail_handler = SMTPHandler((MAIL_SERVER, MAIL_PORT), 'no-reply@' + MAIL_SERVER, ADMINS, 'microblog failure', credentials)
+    #mail_handler = SMTPHandler(mailhost = (MAIL_SERVER, MAIL_PORT),
+    #    fromaddr = 'no-reply@' + MAIL_SERVER,
+    #    toaddrs = ADMINS,
+    #    subject = 'PrayerFirst Failure',
+    #    credentials = credentials,
+    #    secure=None)
+    mail_handler = SMTPHandler((MAIL_SERVER, MAIL_PORT), 'no-reply@' + MAIL_SERVER, ADMINS, 'PrayerFirst failure', credentials)
     mail_handler.setLevel(logging.ERROR)
     app.logger.addHandler(mail_handler)
 
@@ -37,14 +43,14 @@ if not app.debug and os.environ.get('HEROKU') is None:
     file_handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'))
     app.logger.addHandler(file_handler)
     app.logger.setLevel(logging.INFO)
-    app.logger.info('microblog startup')
+    app.logger.info('PrayerFrist startup')
 
 if os.environ.get('HEROKU') is not None:
     import logging
     stream_handler = logging.StreamHandler()
     app.logger.addHandler(stream_handler)
     app.logger.setLevel(logging.INFO)
-    app.logger.info('microblog startup')
+    app.logger.info('PrayerFirst startup')
 
 app.jinja_env.globals['momentjs'] = momentjs
 

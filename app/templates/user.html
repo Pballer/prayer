@@ -3,24 +3,27 @@
 
 {% block content %}
 {% include 'flash.html' %}
-<div class="well well-large" style="height: 140px;">
-    <div class="pull-right">
-        <img src="{{user.avatar(128)}}" class="img-polaroid">
+<div class="well well-large" style="overflow: hidden">
+    <div class="pull-left" style="margin-right: 20px;">
+        <img src="{{user.avatar(128)}}" class="img-polaroid" title="Set your profile picture at www.gravatar.com">
+        <p class="no-space small-text"><a target="_blank" href="http://www.gravatar.com">{{ _('Change Picture') }}</a></p>
     </div>
-    <h1>{{user.nickname}}</h1>
-    {% if user.about_me %}<p>{{user.about_me}}</p>{% endif %}
-    {% if user.last_seen %}
-    <p><em>{{ _('Last seen:') }} {{ momentjs(user.last_seen).calendar() }}</em></p>
-    {% endif %}
-    <p>{{ _('Followers:') }} {{user.followers.count() - 1}} | {{ _('Following:') }} {{user.followed.count() - 1}} |
-    {% if user.id == g.user.id %}
-        <a href="{{url_for('edit')}}">{{ _('Edit your profile') }}</a>
-    {% elif not g.user.is_following(user) %}
-        <a href="{{url_for('follow', nickname = user.nickname)}}">{{ _('Follow') }}</a>
-    {% else %}
-        <a href="{{url_for('unfollow', nickname = user.nickname)}}">{{ _('Unfollow') }}</a>
-    {% endif %}
-    </p>
+    <div >
+        <h1>{{user.nickname}}</h1>
+        {% if user.about_me %}<p>{{user.about_me}}</p>{% endif %}
+        {% if user.last_seen %}
+        <p><em>{{ _('Last seen:') }} {{ momentjs(user.last_seen).calendar() }}</em></p>
+        {% endif %}
+        <p>{{ _('Followers:') }} {{user.followers.count() - 1}} | {{ _('Following:') }} {{user.followed.count() - 1}} |
+        {% if user.id == g.user.id %}
+            <a href="{{url_for('edit')}}">{{ _('Edit your profile') }}</a>
+        {% elif not g.user.is_following(user) %}
+            <a href="{{url_for('follow', nickname = user.nickname)}}">{{ _('Follow') }}</a>
+        {% else %}
+            <a href="{{url_for('unfollow', nickname = user.nickname)}}">{{ _('Unfollow') }}</a>
+        {% endif %}
+        </p>
+    </div>
 </div>
 {% for post in posts.items %}
     {% include 'post.html' %}

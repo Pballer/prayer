@@ -1,0 +1,12 @@
+<!-- extend base layout -->
+{% extends "base.html" %}
+
+{% block content %}
+{% include 'flash.html' %}
+   {% autoescape false %}
+    <h3>{{ _('Members in %(group)s!', group = '<a href="' + url_for("full_group_info", group_id = group.id) + '">' + group.group_name + '</a>') }}</h3>
+    {% endautoescape %}
+{% for user in members %}
+    {% include 'less_user.html' %}
+{% endfor %}
+{% endblock %}

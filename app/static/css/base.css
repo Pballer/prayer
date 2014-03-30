@@ -3,6 +3,70 @@
 }
 
 .post-options li {
-    display:inline;
     margin:0px;
 }
+
+.js-show-post-options{
+    display: inline;
+}
+
+.js-post-options{
+    display: inline;
+}
+
+.custom-well {
+    padding: 5px;
+    background-color: rgb(245, 245, 245);
+    border: 1px solid rgb(227, 227, 227);
+    border-radius: 4px;
+    margin-top: 3px;
+    margin-bottom: 3px;
+}
+
+p.no-margin {
+    margin: 0px;
+}
+
+table.custom-table {
+    border: 2px solid #3399FF;
+    margin-top: 3px;
+    margin-bottom: 3px;
+    /* word-wrap: break-word; */
+    table-layout: fixed;
+}
+
+td.no-top-border {
+    padding: 2px;
+    border-top: none;
+}
+
+.no-space {
+    padding:0px;
+    border:0px;
+    margin:0px;
+}
+
+.small-text {
+    font-size: x-small
+}
+
+.fake-link {
+    display:inline;
+    color: #3399FF;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.no-display {
+    display: none !important;
+}
+
+/* not working.   Covered by container div?
+html {
+    background: url(/static/img/christ_on_the_cross.png) no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
+*/

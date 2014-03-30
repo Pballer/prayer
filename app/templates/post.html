@@ -1,42 +1,49 @@
-<table class="table table-hover", style="word-wrap: break-word;table-layout: fixed;">
+<table class="table custom-table">
     <tr>
-        <td width="70px">
-            <a href="{{url_for('user', nickname = post.author.nickname)}}"><img src="{{post.author.avatar(70)}}" /></a>
+        <td class="no-top-border" width="40px">
+            <a href="{{url_for('user', nickname = post.author.nickname)}}"><img src="{{post.author.avatar(35)}}" /></a>
         </td>
-        <td>
-            <p style="padding:0px;border:0px;margin:0px"><strong><a href="{{url_for('post', id = post.id)}}">{{post.subject}}</a></strong></p>
+        <td class="no-top-border">
+            <p class="no-space"><strong><a href="{{url_for('post', id = post.id)}}">{{post.subject}}</a></strong></p>
             {% autoescape false %}
-            <p style="padding:0px;border:0px;margin:0px;font-size: x-small">{{ _('%(nickname)s said %(when)s:', nickname = '<a href="%s">%s</a>' % (url_for('user', nickname = post.author.nickname), post.author.nickname), when = momentjs(post.timestamp).fromNow()) }}</p>
+            <p class="no-space small-text">{{ _('%(nickname)s said %(when)s:', nickname = '<a href="%s">%s</a>' % (url_for('user', nickname = post.author.nickname), post.author.nickname), when = momentjs(post.timestamp).fromNow()) }}</p>
             {% endautoescape %}
+        </td>
+    </tr>
+    <tr>
+        <td class="no-top-border" colspan="2">
             <p><span id="post{{post.id}}">{{post.body}}</span></p>
             {% if post.answered %}
                 <p>{{ _('Answer:') }}<br>{{post.answer}}</p>
             {% endif %}
             <ul class="post-options">
-            {% if post.language != None and post.language != '' and post.language != g.locale %}
-                <li> 
+            {% if post.language != None and post.language != '' and post.language != g.locale and post.author.id != g.user.id %}
+                <li style="display:inline">
                     <span id="translation{{post.id}}">
                         <a href="javascript:translate('{{post.language}}', '{{g.locale}}', '#post{{post.id}}', '#translation{{post.id}}', '#loading{{post.id}}');">{{ _('Translate') }}</a>
                     </span>
                     <img id="loading{{post.id}}" style="display: none" src="/static/img/loading.gif">
-                </li>|
+                </li>
             {% endif %}
             {% if post.author.id == g.user.id %}
-                {% if not post.answered %}
-                <li>
-                    <a href="{{ url_for('answer', id = post.id) }}">{{ _('Answered?') }}</a>
-                </li>|
+              <div class="js-show-post-options">
+               <span class="fake-link">{{ _('Post options') }}</span>
+               {% if not post.answered %}
+                <li class="js-post-options">
+                    <a href="{{ url_for('answer', id = post.id) }}">{{ _('Answered?') }}</a> |
+                </li>
                 {% else %}
-                <li>
-                    <a href="{{ url_for('unanswered', id = post.id) }}">{{ _('Unanswered')}}</a>
-                </li>|
+                <li class="js-post-options">
+                    <a href="{{ url_for('unanswered', id = post.id) }}">{{ _('Unanswered')}}</a> |
+                </li>
                 {% endif %}
-                <li>
-                    <a href="{{ url_for('edit_post', id = post.id) }}">{{ _('Edit post') }}</a>
-                </li>|
-                <li>
+                <li class="js-post-options">
+                    <a href="{{ url_for('edit_post', id = post.id) }}">{{ _('Edit post') }}</a> |
+                </li>
+                <li class="js-post-options">
                     <a href="{{ url_for('delete', id = post.id) }}">{{ _('Delete') }}</a>
                 </li>
+	      </div>
             {% endif %}
             </ul>
         </td>

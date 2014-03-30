@@ -1,0 +1,19 @@
+<div class="custom-well">
+    <p>Group Name: <a href="{{ url_for('group', group_id = group.id) }}">{{group.group_name}}</a></p>
+    <p>About Group: {{group.about_group}}</p>
+    {% if group.public and not group.in_group(g.user) %}
+        <a href="{{ url_for('join_group', group_id = group.id) }}">{{_('Join this group!') }}</a>
+    {% elif not group.in_group(g.user) and not group.public and not group.request_pending(g.user) %}
+        <a href="{{ url_for('request_join_group', group_id = group.id) }}">{{ _('Request to join this group') }}</a>
+    {% elif group.request_pending(g.user) %}
+        <p>Your request is pending</p>
+    {% elif group.is_admin(g.user) %}
+        <a href="{{ url_for('group_admin', group_id = group.id) }}">{{ _('Admin Page')  }}</a>
+    {% endif %}
+    {% if addresses %}
+        <p>{{_('Group meeting places and times:')}}</p>
+        {% for address in addresses %}
+            {% include 'group_address.html' %}
+        {% endfor %}
+    {% endif %}
+</div>

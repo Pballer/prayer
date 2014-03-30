@@ -1,0 +1,12 @@
+<!-- extend base layout -->
+{% extends "base.html" %}
+
+{% block content %}
+{% include 'flash.html' %}
+    <h3>Admin page for: <a href="{{ url_for('group', group_id = group.id) }}">{{group.group_name}}</a></h3>
+    <ul>
+        <li><a href="{{ url_for('group_requests', group_id = group.id) }}">{{_('Pending requests to join this group')}}</a></li>
+        <li><a href="{{ url_for('add_group_address', group_id = group.id) }}">{{_('Add a meeting time and address to this group')}}</a></li>
+        <li><a href="{{ url_for('email_group', group_id = group.id) }}">{{ _('Invite friends to your group.') }}</a></li>
+    </ul>
+{% endblock %}

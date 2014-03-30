@@ -23,13 +23,12 @@ function set_openid(openid, pr)
         <div class="help-block">{{ _('Click on your OpenID provider below:') }}</div>
         <div class="control-group">
             {% for pr in providers %}
-            <a href="javascript:set_openid('{{pr.url}}', '{{pr.name}}');"><img src="/static/img/{{pr.name.lower()}}.png" class="img-polaroid" style="margin:2px;" /></a>
+            <input type="image" src="{{ url_for('.static', filename = 'img/{0}.png'.format(pr.name.lower())) }}" class="img-polariod" onclick="javascript:set_openid('{{pr.url}}', '{{pr.name}}');" value="" style="margin:2px;"/>
             {% endfor %}
         </div>
         <div class="control-group{% if form.errors.openid %} error{% endif %}">
-            <label class="control-label" for="openid">{{ _('Or enter your OpenID here:') }}</label>
             <div class="controls">
-                {{ form.openid(size = 80, class = "span4") }}
+                {{ form.openid(size = 80, class = "no-display") }}
                 {% for error in form.errors.openid %}
                     <span class="help-inline">[{{error}}]</span><br>
                 {% endfor %}
@@ -40,11 +39,6 @@ function set_openid(openid, pr)
                 <label class="checkbox" for="remember_me">
                     {{ form.remember_me }} {{ _('Remember Me') }}
                 </label>
-            </div>
-        </div>
-        <div class="control-group">
-            <div class="controls">
-                <input class="btn btn-primary" type="submit" value="{{ _('Sign In') }}">
             </div>
         </div>
     </form>

@@ -1,0 +1,30 @@
+<table class="table table-hover", style="word-wrap: break-word;table-layout: fixed;">
+    <tr>
+        <td width="70px">Meeting time:</td>
+        <td>address.datetime</td>
+    </tr>
+    <tr>
+        <td width="70px">Address:</td>
+        <td>address.address</td>
+    </tr>
+    <tr>
+        <td width ="70px">Address2:</td>
+        <td>address.address2</td>
+    </tr>
+    <tr>
+        <td width="70px">City:</td>
+        <td>address.city</td>
+    </tr>
+    <tr>
+        <td width = "70px">State:</td>
+        <td>address.state</td>
+    </tr>
+    <tr>
+        <td width="70px">Zipcode:</td>
+        <td>address.zipcode</td>
+    </tr>
+    <tr>
+        <td width="70px">Directions:</td>
+        <td>address.directions</td>
+    </tr>
+</table>

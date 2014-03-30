@@ -31,8 +31,8 @@ MAIL_SERVER = 'smtp.googlemail.com'
 MAIL_PORT = 465
 MAIL_USE_TLS = False
 MAIL_USE_SSL = True
-MAIL_USERNAME = 'gough.cory'
-MAIL_PASSWORD = 'A1!ghjkl'
+MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
+MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
 
 # available languages
 LANGUAGES = {
@@ -41,12 +41,12 @@ LANGUAGES = {
 }
 
 # microsoft translation service
-MS_TRANSLATOR_CLIENT_ID = '02752774-b932-4b78-a8c7-bdaecdafaedf' # enter your MS translator app id here
-MS_TRANSLATOR_CLIENT_SECRET = 'NtOMNZpkfAcEiBoiMbMDwd2Qkr45Wm1xWBMTh0hgc90' # enter your MS translator app secret here
+MS_TRANSLATOR_CLIENT_ID = os.environ.get('MS_TRANSLATOR_CLIENT_ID')
+MS_TRANSLATOR_CLIENT_SECRET = os.environ.get('MS_TRANSLATOR_CLIENT_SECRET')
 
 # administrator list
-ADMINS = ['gough.cory@gmail.com']
+ADMINS = ['prayerfirst11@gmail.com']
 
 # pagination
-POSTS_PER_PAGE = 5
+POSTS_PER_PAGE = 30
 MAX_SEARCH_RESULTS = 50

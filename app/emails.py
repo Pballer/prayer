@@ -1,12 +1,13 @@
 from flask import render_template
 from flask.ext.mail import Message
-from app import mail
+from app import app, mail
 from decorators import async
 from config import ADMINS
 
 @async    
 def send_async_email(msg):
-    mail.send(msg)
+    with app.app_context():
+        mail.send(msg)
     
 def send_email(subject, sender, recipients, text_body, html_body):
     msg = Message(subject, sender = sender, recipients = recipients)
@@ -18,7 +19,7 @@ def send_email(subject, sender, recipients, text_body, html_body):
 
     
 def follower_notification(followed, follower):
-    send_email("[microblog] %s is now following you!" % follower.nickname,
+    send_email("[PrayerFirst] %s is now following you!" % follower.nickname,
         ADMINS[0],
         [followed.email],
         render_template("follower_email.txt", 
@@ -26,3 +27,11 @@ def follower_notification(followed, follower):
         render_template("follower_email.html", 
             user = followed, follower = follower))
         
+def group_invite(group, recipients):
+    send_email("[PrayerFirst] You have been invited to join {0}".format(group.group_name),
+        ADMINS[0],
+        recipients,
+        render_template("group_invite.txt",
+            group = group),
+        render_template("group_invite.html",
+            group = group))

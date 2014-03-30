@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    {% if title %}
+    <title>{{title}} - PrayerBox</title>
+    {% else %}
+    <title>PrayerBox</title>
+    {% endif %}
+    <link href="{{ url_for('.static', filename = 'css/main.min.css') }}" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  </head>
+  <body>
+      <header class="banner navbar navbar-default navbar-fixed-top" role="banner">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="http://www.spritzinc.com/"><img src="/wp-content/themes/spritz/assets/img/spritz-logo.png" alt="Spritz"></a>
+    </div>
+
+    <nav class="collapse navbar-collapse" role="navigation">
+      <ul id="menu-primary-navigation" class="nav navbar-nav"><li class="menu-about-spritz"><a href="/about/">About Spritz</a></li>
+<li class="menu-developers"><a href="/developers/">Developers</a></li>
+<li class="menu-the-science"><a href="/the-science/">The Science</a></li>
+<li class="menu-faqs"><a href="/faq/">FAQs</a></li>
+<li class="menu-blog"><a href="/blog/">Blog</a></li>
+<li class="menu-press"><a href="/press/">Press</a></li>
+</ul>    </nav>
+  </div>
+</header>
+  </body>
+</html>

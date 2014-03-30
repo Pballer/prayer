@@ -1,0 +1,9 @@
+<div class="well">
+    <p>{{ _('Hello From <code>PrayerFirst</code>,') }}</p>
+    {% autoescape false %}
+    <p>{{ _('You have been invited to join %(group)s!  Follow this link to join.', group = '<a href="' + url_for("full_group_info", group_id = group.id, _external = True) + '">' + group.group_name + '</a>') }}</p>
+    {% endautoescape %}
+    <p>{{ _('Regards,') }}</p>
+    <p>{{ _('The <code>PrayerFrist</code> admin') }}</p>
+</div>
+

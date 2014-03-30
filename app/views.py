@@ -3,10 +3,10 @@ from flask.ext.login import login_user, logout_user, current_user, login_require
 from flask.ext.sqlalchemy import get_debug_queries
 from flask.ext.babel import gettext
 from app import app, db, lm, oid, babel
-from forms import LoginForm, EditForm, PostForm, SearchForm, CommentForm, AnswerForm
-from models import User, ROLE_USER, ROLE_ADMIN, Post, Comment
+from forms import LoginForm, EditForm, PostForm, SearchForm, CommentForm, AnswerForm, GroupForm, GroupPost, AddressForm, EmailGroupForm
+from models import User, ROLE_USER, ROLE_ADMIN, Post, Comment, Group, Church, GroupAddress
 from datetime import datetime
-from emails import follower_notification
+from emails import follower_notification, group_invite
 from guess_language import guessLanguage
 from translate import microsoft_translate
 from config import POSTS_PER_PAGE, MAX_SEARCH_RESULTS, LANGUAGES, DATABASE_QUERY_TIMEOUT, WHOOSH_ENABLED
@@ -51,9 +51,17 @@ def internal_error(error):
 @app.route('/', methods = ['GET', 'POST'])
 @app.route('/index', methods = ['GET', 'POST'])
 @app.route('/index/<int:page>', methods = ['GET', 'POST'])
-@login_required
 def index(page = 1):
+    posts = Post.query.filter(Post.public == True).order_by(Post.timestamp.desc()).paginate(page, POSTS_PER_PAGE, False)    
+    return render_template('index.html',
+        title = 'Home',
+        posts = posts)
+
+@app.route('/post-prayer', methods = ['GET', 'POST'])
+@login_required
+def post_prayer():
     form = PostForm()
+    group_forms = [(group, GroupPost(prefix = str(group.id))) for group in g.user.groups]
     if form.validate_on_submit():
         language = guessLanguage(form.post.data)
         if language == 'UNKNOWN' or len(language) > 5:
@@ -62,16 +70,210 @@ def index(page = 1):
             body = form.post.data,
             timestamp = datetime.utcnow(),
             author = g.user,
-            language = language)
+            language = language,
+            public = form.public.data)
         db.session.add(post)
         db.session.commit()
+        if not post.public:
+            # Filter only group that were selected.
+            add_groups = filter(lambda g: g[1].group_access.data == True, group_forms)
+            for group in add_groups:
+                group[0].add_post(post)
+                db.session.add(group[0])
+            db.session.commit()   
         flash(gettext('Your post is now live!'))
-        return redirect(url_for('index'))
-    posts = g.user.followed_posts().paginate(page, POSTS_PER_PAGE, False)
-    return render_template('index.html',
-        title = 'Home',
+        return redirect(url_for('post', id = post.id))
+    return render_template('post_form.html',
+        title = 'Post Prayer',
         form = form,
-        posts = posts)
+        group_forms = group_forms)
+
+
+@app.route('/group/<int:group_id>')
+@app.route('/group/<int:group_id>/<int:page>')
+@login_required
+def group(group_id, page = 1):
+    posts = [] # Set as empty incase user is not in group.
+    group = Group.query.get(group_id)
+    if group == None:
+        flash("Group not found.")
+        return redirect(url_for('index'))
+    if group.in_group(g.user):
+        posts = Post.query.filter((Post.id.in_([post.id for post in [list(u.posts) for u in group.users] for post in post if post.public == True])) | (Post.id.in_([p.id for p in group.posts]))).order_by(Post.timestamp.desc()).paginate(page, POSTS_PER_PAGE, False)
+    addresses = group.locations
+    return render_template('group.html',
+        title = group.group_name,
+        posts = posts,
+        group = group,
+        addresses = addresses)
+
+@app.route('/email-group/<int:group_id>', methods = ['GET', 'POST'])
+@login_required
+def email_group(group_id):
+    group = Group.query.get(group_id)
+    if group == None:
+        flash("Group not found.")
+        return redirect(url_for('index'))
+    if not group.is_admin(g.user):
+        flash("You are not an admin of this group")
+        return redirect(url_for('index'))
+    form = EmailGroupForm()
+    if form.validate_on_submit():
+        group_invite(group, form.recipients.data.split(','))
+        flash(gettext('Your email has been sent!'))
+        return redirect(url_for('group_admin', 
+            group_id = group.id))
+    return render_template('email_group.html',
+        title = 'Email - {0}'.format(group.group_name),
+        form = form)
+
+@app.route('/full-group-info/<int:group_id>', methods = ['GET', 'POST'])
+@login_required
+def full_group_info(group_id):
+    group = Group.query.get(group_id)
+    addresses = []
+    if group == None:
+        flash("Group not found.")
+        return redirect(url_for('index'))
+    if group.in_group(g.user):
+        addresses = group.locations.all()
+    return render_template('group_info_full.html',
+        title = group.group_name,
+        group = group,
+        addresses = addresses)
+
+@app.route('/my-groups', methods = ['GET', 'POST'])
+@login_required
+def my_groups():
+    groups = g.user.groups
+    return render_template('my_groups.html',
+        title = 'My Groups',
+        groups = groups)
+
+@app.route('/group-members/<int:group_id>', methods = ['GET'])
+@login_required
+def group_members(group_id):
+    group = Group.query.get(group_id)
+    if group == None:
+        flash("Group not found.")
+        return redirect(url_for('index'))
+    members = group.users
+    return render_template('group_members.html',
+        title = 'Group Members {0}'.format(group.group_name),
+        group = group,
+        members = members)
+
+@app.route('/group-admin-page/<int:group_id>', methods = ['GET', 'POST'])
+@login_required
+def group_admin(group_id):
+    group = Group.query.get(group_id)
+    if group == None:
+        flash("Group not found.")
+        return redirect(url_for('index'))
+    if not group.is_admin(g.user):
+        flash("You are not an admin of this group")
+        return redirect(url_for('index'))
+    return render_template('group_admin.html', 
+        title = "Admin - {0}".format(group.group_name),
+        group = group)
+
+@app.route('/pending-requests/<int:group_id>', methods = ['GET', 'POST'])
+@login_required
+def group_requests(group_id):
+    group = Group.query.get(group_id)
+    if group == None:
+        flash("Group not found.")
+        return redirect(url_for('index'))
+    if not group.is_admin(g.user):
+        flash("You are not an admin of this group")
+        return redirect(url_for('index'))
+    pending_requests = group.requests.all()
+    return render_template('group_admin_requests.html',
+        title = 'Group Admin Page',
+        group = group,
+        pending_requests = pending_requests)
+
+@app.route('/add-group-address/<int:group_id>', methods = ['GET', 'POST'])
+@login_required
+def add_group_address(group_id):
+    group = Group.query.get(group_id)
+    if group == None:
+        flash("Group not found.")
+        return redirect(url_for('index'))
+    if not group.is_admin(g.user):
+        flash("You are not an admin of this group")
+        return redirect(url_for('index'))
+    form = AddressForm()
+    if form.validate_on_submit():
+        group_address = GroupAddress(group = group,
+            datetime = form.datetime.data,
+            address = form.address.data,
+            address2 = form.address2.data,
+            city = form.city.data,
+            state = form.state.data,
+            zipcode = form.zipcode.data,
+            directions = form.directions.data)
+        db.session.add(group_address)
+        db.session.commit()
+        flash(gettext('Address was added to your group.'))
+        return redirect(url_for('group', group_id = group_id))
+    return render_template('add_address.html',
+        title = "Add address - {0}".format(group.group_name),
+        form = form)
+
+@app.route('/group-approve-user/<nickname>/<int:group_id>/<approve>', methods = ['GET', 'POST'])
+@login_required
+def group_approve_user(nickname, group_id, approve):
+    user = User.query.filter_by(nickname = nickname).first()
+    if user == None:
+        flash(gettext('User %(nickname)s not found.', nickname = nickname))
+        return redirect(url_for('index'))
+    group = Group.query.get(group_id)
+    if group == None:
+        flash("Group not found.")
+        return redirect(url_for('index'))
+    if not group.is_admin(g.user):
+        flash("You are not an admin of this group")
+        return redirect(url_for('index'))
+    if group.in_group(user):
+        flash("User is already in group.")
+        return redirect(url_for('index'))
+    if approve:
+        group.add_user(user)
+        flash("User was added to group!.")
+    else:
+        flash("User was not added to the group.")
+    group.remove_request(user)
+    db.session.add(group)
+    db.session.commit()
+    pending_requests = group.requests.all()
+    return render_template('group_admin_requests.html',
+        title = 'Group Admin Page',
+        group = group,
+        pending_requests = pending_requests)
+
+@app.route('/create-group', methods = ['GET', 'POST'])
+@login_required
+def create_group():
+    if g.user.max_groups():
+        flash(gettext('How many groups do you need to be in? Only 5 for you :)'))
+        return redirect(url_for('index'))
+    form = GroupForm()
+    if form.validate_on_submit():
+        group = Group(group_name = form.group_name.data,
+            about_group = form.about_group.data,
+            public = form.public.data)
+        db.session.add(group)
+        db.session.commit()
+        # Create group, add creator to admin and user list.
+        db.session.add(group.add_admin(g.user))
+        db.session.add(group.add_user(g.user))
+        db.session.commit()
+        flash('Welcome to your new group!  Now add some friends!')
+        return redirect(url_for('group', group_id = group.id))
+    return render_template('group_form.html',
+        title = 'Create Group',
+        form = form)
 
 @app.route('/login', methods = ['GET', 'POST'])
 @oid.loginhandler
@@ -125,7 +327,10 @@ def user(nickname, page = 1):
     if user == None:
         flash(gettext('User %(nickname)s not found.', nickname = nickname))
         return redirect(url_for('index'))
-    posts = user.posts.paginate(page, POSTS_PER_PAGE, False)
+    if user.id == g.user.id:
+        posts = user.posts.order_by(Post.timestamp.desc()).paginate(page, POSTS_PER_PAGE, False)
+    else:
+        posts = user.posts.filter(Post.public == True).order_by(Post.timestamp.desc()).paginate(page, POSTS_PER_PAGE, False)
     return render_template('user.html',
         user = user,
         posts = posts)
@@ -151,6 +356,7 @@ def edit():
 @app.route('/edit-post/<int:id>/<int:page>/', methods = ['GET', 'POST'])
 @login_required
 def edit_post(id, page = 1):
+    print notreal
     post = Post.query.get(id)
     if post == None:
         flash('Post not found.')
@@ -178,6 +384,7 @@ def edit_post(id, page = 1):
         post = post,
         form = form,
         comments = comments)
+
 @app.route('/edit-comment/<int:id>', methods = ['GET', 'POST'])
 @app.route('/edit-comment/<int:id>/<int:page>', methods = ['GET', 'POST'])
 def edit_comment(id, page = 1):
@@ -204,6 +411,46 @@ def edit_comment(id, page = 1):
     return render_template('edit_comment.html',
         form = form) 
 
+@app.route('/join-group/<int:group_id>')
+@login_required
+def join_group(group_id):
+    if g.user.max_groups():
+        flash(gettext('How many groups do you need to be in? Only 5 for you :)'))
+        return redirect(url_for('index'))
+    group = Group.query.get(group_id)
+    if group == None:
+        flash(gettext('Group was not found.'))
+        return redirect(url_for('index'))
+    add = group.add_user(g.user)
+    if add is None:
+        flash(gettext('You cannon join this group.'))
+        return redirect(url_for('index'))
+    db.session.add(add)
+    db.session.commit()
+    flash(gettext('Welcome to your new group!'))
+    return redirect(url_for('group', group_id = group.id))
+
+@app.route('/request-join-group/<int:group_id>')
+@login_required
+def request_join_group(group_id):
+    if g.user.max_groups():
+        flash(gettext('How many groups do you need to be in? Only 5 for you :)'))
+        return redirect(url_for('index'))
+    group = Group.query.get(group_id)
+    if group == None:
+        flash(gettext('Group was not found.'))
+        return redirect(url_for('index'))
+    if group.public:
+        flash(gettext('This is a public group.'))
+        return redirect(url_for('group', group_id = group.id))
+    request = group.add_request(g.user)
+    if request is None:
+        flash(gettext('You cannon request to join this group.'))
+        return redirect(url_for('index'))
+    db.session.add(request)
+    db.session.commit()
+    flash(gettext('Your request has been submitted'))
+    return redirect(url_for('group', group_id = group.id))
 
 @app.route('/follow/<nickname>')
 @login_required
@@ -254,11 +501,12 @@ def delete(id):
     if post.author.id != g.user.id:
         flash('You cannot delete this post.')
         return redirect(url_for('index'))
-    comments = post.comments.all()
-    # Delete all comments if they exist.
-    if comments:
-        for comment in comments:
-            db.session.delete(comment)
+    # Delete group associations
+    for group in post.groups.all():
+        post.groups.remove(group)
+    # Delete all comments.
+    for comment in post.comments.all():
+        db.session.delete(comment)
     db.session.delete(post)
     db.session.commit()
     flash('Your post has been deleted.')
@@ -274,46 +522,43 @@ def delete_comment(id):
     if comment.author.id != g.user.id:
         flash('You cannot delete this comment.')
         return redirect(url_for('index'))
+    post = comment.op # Get post before comment is deleted. For redirect.
     db.session.delete(comment)
     db.session.commit()
     flash('Your comment has been deleted.')
-    return redirect(request.args.get('next') or url_for('index'))
+    return redirect(url_for('post', id = post.id))
 
-@app.route('/search', methods = ['POST'])
+@app.route('/search', methods = ['GET', 'POST'])
 @login_required
 def search():
-    # If search type is not defined default to Post, For nav bar.
-    g.search_form.search_type.data = g.search_form.search_type.data
-    if g.search_form.search_type.data == "None":
-        g.search_form.search_type.data = 'Post'
-    query = g.search_form.search.data
-    if not g.search_form.validate_on_submit():
+    if not g.search_enabled:
+        flash(gettext('Search is not enabled.'))
         return redirect(url_for('index'))
-    if g.search_form.search_type.data == 'User':
-        results = User.query.whoosh_search('%s* OR *%s* OR *%s' % (query, query, query), MAX_SEARCH_RESULTS).all()
-        return render_template('user_search.html',
-            users = results)
-    elif g.search_form.search_type.data == 'Post':
-        results = Post.query.whoosh_search(query, MAX_SEARCH_RESULTS).all()
-        return render_template('search_results.html',
-            query = query,
-            results = results)
-    else:
-        return redirect(url_for('index'))
-
-
-   # return redirect(url_for('search_results', query_type = g.search_form.search_type.data, query = g.search_form.search.data))
+    if g.search_form.validate_on_submit():
+        return redirect(url_for('search_results',
+            query = g.search_form.search.data,
+            query_type = g.search_form.search_type.data))
+    return render_template('advanced_search.html')
 
 @app.route('/search_results/<query_type>/<query>')
 @login_required
-def search_results(query, query_type = 'Post'):
+def search_results(query, query_type):
+    if not g.search_enabled:
+        flash(gettext('Search is not enabled.'))
+        return redirect(url_for('index'))
     if query_type == 'User':
         results = User.query.whoosh_search('%s* OR *%s* OR *%s' % (query, query, query), MAX_SEARCH_RESULTS).all()
         return render_template('user_search.html',
+            query = query,
             users = results)
     elif query_type == 'Post':
         results = Post.query.whoosh_search(query, MAX_SEARCH_RESULTS).all()
         return render_template('search_results.html',
+            query = query,
+            results = results)
+    elif query_type == 'Group':
+        results = Group.query.whoosh_search('%s* OR *%s* OR *%s' % (query, query, query), MAX_SEARCH_RESULTS).all()
+        return render_template('group_search.html',
             query = query,
             results = results)
     else:

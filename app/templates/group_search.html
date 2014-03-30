@@ -3,8 +3,8 @@
 
 {% block content %}
 {% include 'flash.html' %}
-<h3>User search for: {{ query }}</h3>
-{% for user in users %}
-    {% include 'less_user.html' %}
+<h3>Group search for: {{ query }}</h3>
+{% for group in results %}
+    {% include 'group_info.html' %}
 {% endfor %}
 {% endblock %}

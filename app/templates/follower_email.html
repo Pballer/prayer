@@ -1,13 +1,17 @@
 <p>Dear {{user.nickname}},</p>
+{% autoescape false %}
 <p>{{ _('%(nickname)s is now a follower.', nickname = '<a href="' + url_for("user", nickname = follower.nickname, _external = True) + '">' + follower.nickname + '</a>') }}</p>
+{% endautoescape %}
 <table>
     <tr valign="top">
         <td><img src="{{follower.avatar(50)}}"></td>
         <td>
             <a href="{{url_for('user', nickname = follower.nickname, _external = True)}}">{{follower.nickname}}</a><br />
-            {{follower.about_me}}
+            {% if follower.about_me %}
+                {{follower.about_me}}
+            {% endif %}
         </td>
     </tr>
 </table>
 <p>{{ _('Regards,') }}</p>
-<p>{{ _('The <code>microblog</code> admin') }}</p>
+<p>{{ _('The <code>PrayerFirst</code> admin') }}</p>

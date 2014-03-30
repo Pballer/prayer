@@ -1,0 +1,61 @@
+<!-- extend base layout -->
+{% extends "base.html" %}
+
+{% block content %}
+{% include 'flash.html' %}
+<div class="well">
+    <form class="form-horizontal" action="" method="post" name="post">
+        {{form.hidden_tag()}}
+        <div class="control-group{% if form.errors.subject %} error{% endif %}">
+            <label class="control-label" for="subject">{{ _('Prayer subject:')}}</label>
+            <div class="controls">
+                {{ form.subject(size = 30, class = "span4") }}
+                {% for error in form.errors.subject %}
+                    <span class="help-inline">[{{error}}]</span><br>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="control-group{% if form.errors.post %} error{% endif %}">
+            <label class="control-label" for="post">{{ _('Prayer details:') }}</label>
+            <div class="controls">
+                {{ form.post(cols = 64, rows = 4, class = "span4") }}
+                {% for error in form.errors.post %}
+                    <span class="help-inline">[{{error}}]</span><br>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="control-group">
+            <div class="controls">
+                <label class="checkbox" for="public">
+                    {{ form.public }} {{ _('Make post public?') }}
+                </label>
+            <p class="js-groups">Select groups that can see your prayer:</p>
+            </div>
+        </div>
+        {% if group_forms %}
+          {% for group in group_forms %}
+           {{ group[1].hidden_tag() }}
+            <div class="control-group js-groups">
+                <div class="controls"
+                    <label class="checkbox" for="group_access{{group[0].id}}">
+                            {{ group[1].group_access }} {{ group[0].group_name }}
+                    </label>
+                </div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <div class="control-group js-groups">
+                <div class="controls">
+                    <p>{{ _('What are ') }}<a href="{{ url_for('create_group') }}">{{ _('groups?') }}</a></p>
+                </div>
+          </div>
+        {% endif %}
+        <div class="control-group">
+            <div class="controls">
+                <input class="btn btn-primary" type="submit" value="{{ _('Post!') }}">
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
