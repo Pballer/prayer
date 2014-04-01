@@ -356,7 +356,6 @@ def edit():
 @app.route('/edit-post/<int:id>/<int:page>/', methods = ['GET', 'POST'])
 @login_required
 def edit_post(id, page = 1):
-    print notreal
     post = Post.query.get(id)
     if post == None:
         flash('Post not found.')
