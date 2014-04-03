@@ -229,7 +229,6 @@ def group_approve_user(nickname, group_id, approve):
         flash(gettext('User %(nickname)s not found.', nickname = nickname))
         return redirect(url_for('index'))
     group = Group.query.get(group_id)
-    import pdb; pdb.set_trace()
     if group == None:
         flash("Group not found.")
         return redirect(url_for('index'))
