@@ -229,6 +229,7 @@ def group_approve_user(nickname, group_id, approve):
         flash(gettext('User %(nickname)s not found.', nickname = nickname))
         return redirect(url_for('index'))
     group = Group.query.get(group_id)
+    import pdb; pdb.set_trace()
     if group == None:
         flash("Group not found.")
         return redirect(url_for('index'))
@@ -238,7 +239,7 @@ def group_approve_user(nickname, group_id, approve):
     if group.in_group(user):
         flash("User is already in group.")
         return redirect(url_for('index'))
-    if approve:
+    if approve == "True":
         group.add_user(user)
         flash("User was added to group!.")
     else:
