@@ -449,7 +449,7 @@ def request_join_group(group_id):
     db.session.add(request)
     db.session.commit()
     flash(gettext('Your request has been submitted'))
-    return redirect(url_for('group', group_id = group.id))
+    return redirect(url_for('full_group_info', group_id = group.id))
 
 @app.route('/follow/<nickname>')
 @login_required

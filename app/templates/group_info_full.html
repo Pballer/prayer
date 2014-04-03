@@ -2,6 +2,7 @@
 {% extends "base.html" %}
 
 {% block content %}
+{% include 'flash.html' %}
 <div class="well">
     <p>Group Name: <a href="{{ url_for('group', group_id = group.id) }}">{{group.group_name}}</a></p>
     <p>About Group: {{group.about_group}}</p>
