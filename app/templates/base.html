@@ -32,6 +32,15 @@
     <meta name="msapplication-TileColor" content="#da532c">
     <meta name="msapplication-TileImage" content="/mstile-144x144.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="text/javascript">
+        var SpritzSettings = {
+            clientId: "a0261459dc5951412",
+            redirectUri: "{{ url_for('spritz_login', _external=True) }}"
+        };
+    </script>
+    <script id="spritzjs" type="text/javascript" 
+        src=http://sdk.spritzinc.com/js/1.0/js/spritz.min.js>
+    </script>
   </head>
   <body>
     <div class="container">

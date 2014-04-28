@@ -640,3 +640,13 @@ def translate():
             request.form['sourceLang'],
             request.form['destLang']) })
 
+
+@app.route('/spritz_login')
+def spritz_login():
+    return render_template('login_success.html')
+
+@app.route('/test_spritz')
+def test_spritz():
+    return render_template('test_spritz.html')
+
+
