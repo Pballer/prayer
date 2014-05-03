@@ -32,5 +32,12 @@ $(document).ready(function() {
         *  jquery will revert back to inline when 'show().'
         */
         $('.js-post-options', this).hide()
+
+	$.get(
+	    "http://labs.bible.org/api/?passage=votd",
+	    function(data) {
+	        $('#votd').html(data);
+	    }
+	);
 });
 

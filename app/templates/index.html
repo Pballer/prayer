@@ -10,6 +10,7 @@
 {% include 'flash.html' %}
 <div class="custom-well">
     <p class="no-margin">{{ _('Start praying for the list below or ') }}<a href="{{ url_for('post_prayer') }}">{{ _('post your own!') }}</a></p>
+    <p id="votd"></p>
 </div>
 {% include 'list_posts.html' %}
 {% endblock %}
