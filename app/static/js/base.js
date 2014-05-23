@@ -16,6 +16,22 @@ function translate(sourceLang, destLang, sourceId, destId, loadingId) {
 	});
 }
 
+function processNetResults(result) {
+        var text = "";
+
+        for(var i=0, count=result.length; i<count; i++) {
+            text += result[i].text+'';
+        }
+        document.getElementById('votd').innerHTML = text; 
+}
+
+function loadNetText(reference) {
+        var script = document.createElement('script');
+        script.setAttribute('src', 'http://labs.bible.org/api/?passage='+escape(reference)+'&type=json&callback=processNetResults');
+        document.getElementsByTagName('head')[0].appendChild(script);
+}
+
+
 $(document).ready(function() {
         $('#public').change(function() {
             $('.js-groups').slideToggle('slow');
@@ -31,18 +47,20 @@ $(document).ready(function() {
         *  Set as inline in base.css then hide so, 
         *  jquery will revert back to inline when 'show().'
         */
-        $('.js-post-options', this).hide()
+        $('.js-post-options', this).hide();
 
-	$.ajax({
+	/*$.ajax({  //Fix this to use jquery.
 	    type: 'GET',
 	    url: 'http://labs.bible.org/api/?passage=votd&type=json',
-	    dataType: 'json',
+	    dataType: 'jsonp',
  	    success: function(data) {
 	        $('#votd').html(data);
 	    },
 	    error: function(e) {
 		console.log(e.message);
 	    }
-	});
+	});*/
+        loadNetText('votd');
+
 });
 
