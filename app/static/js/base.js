@@ -60,7 +60,11 @@ $(document).ready(function() {
 		console.log(e.message);
 	    }
 	});*/
-        loadNetText('votd');
+	
+	// Only load if on home page.
+	if( $('votd').length) {
+            loadNetText('votd');
+	}
 
 });
 
