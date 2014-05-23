@@ -33,11 +33,16 @@ $(document).ready(function() {
         */
         $('.js-post-options', this).hide()
 
-	$.get(
-	    "http://labs.bible.org/api/?passage=votd",
-	    function(data) {
+	$.ajax({
+	    type: 'GET',
+	    url: 'http://labs.bible.org/api/?passage=votd&type=json',
+	    dataType: 'json',
+ 	    success: function(data) {
 	        $('#votd').html(data);
+	    },
+	    error: function(e) {
+		console.log(e.message);
 	    }
-	);
+	});
 });
 
