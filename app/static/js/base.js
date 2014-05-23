@@ -62,7 +62,7 @@ $(document).ready(function() {
 	});*/
 	
 	// Only load if on home page.
-	if( $('votd').length) {
+	if( $('#votd').length) {
             loadNetText('votd');
 	}
 
