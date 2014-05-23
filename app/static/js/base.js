@@ -17,10 +17,10 @@ function translate(sourceLang, destLang, sourceId, destId, loadingId) {
 }
 
 function processNetResults(result) {
-        var text = "";
+        var text = '<b>' + result[0].bookname + '</b> ';
 
         for(var i=0, count=result.length; i<count; i++) {
-            text += result[i].text+'';
+            text += '<b>' + result[i].verse + '</b> ' + result[i].text+' ';
         }
         document.getElementById('votd').innerHTML = text; 
 }
