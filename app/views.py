@@ -3,7 +3,7 @@ from flask.ext.login import login_user, logout_user, current_user, login_require
 from flask.ext.sqlalchemy import get_debug_queries
 from flask.ext.babel import gettext
 from app import app, db, lm, oid, babel
-from forms import LoginForm, EditForm, PostForm, SearchForm, CommentForm, AnswerForm, GroupForm, GroupPost, AddressForm, EmailGroupForm
+from forms import LoginForm, EditForm, PostForm, SearchForm, CommentForm, AnswerForm, GroupForm, GroupPost, AddressForm, EmailGroupForm, BibleVerseForm
 from models import User, ROLE_USER, ROLE_ADMIN, Post, Comment, Group, Church, GroupAddress
 from datetime import datetime
 from emails import follower_notification, group_invite
@@ -647,6 +647,7 @@ def spritz_login():
 
 @app.route('/test_spritz')
 def test_spritz():
-    return render_template('test_spritz.html')
+    form = BibleVerseForm()
+    return render_template('test_spritz.html', form = form)
 
 

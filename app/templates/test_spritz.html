@@ -3,8 +3,26 @@
 {% block title %}Test Spritz{% endblock %}
 
 {% block content %}
-    <center><p><div data-role="spritzer"></div><p></center>
-    <h1>My Redicle is Above Me.</h1>
-    <p>A sample paragraph.</p>
+    <script src="{{ url_for('.static', filename = 'js/spritz_bible.js') }}"></script>
+    <center><div id="spritzer"></div></center>
+    <div class="well" style="position: relative">
+    <div>
+            <label id="verses" for="spritz_verses">{{ _('Spritz Verses:') }}</label>
+            <div>
+                {{ form.spritz_verses(cols = 100, rows = 10, class = "span4") }}
+            </div>
+        </div>
+    <div>
+        <label for="verse">{{ _('Book Verse:Verse')}}</label>
+        <div>
+            {{ form.verse(size = 30, class='span4') }}
+        </div>
+    </div>
+    <div>
+        <div>
+            <button class="btn btn-primary" id="fillRandom" type="submit">{{ _('Spritz Verses!') }}</button>
+        </div>
+    </div>
+    </div>
 {% endblock %}
 

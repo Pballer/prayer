@@ -25,12 +25,11 @@ function processNetResults(result) {
         document.getElementById('votd').innerHTML = text; 
 }
 
-function loadNetText(reference) {
+function loadNetText(reference,callback) {
         var script = document.createElement('script');
-        script.setAttribute('src', 'http://labs.bible.org/api/?passage='+escape(reference)+'&type=json&callback=processNetResults');
+        script.setAttribute('src', 'http://labs.bible.org/api/?passage='+escape(reference)+'&type=json&callback='+escape(callback));
         document.getElementsByTagName('head')[0].appendChild(script);
 }
-
 
 $(document).ready(function() {
         $('#public').change(function() {
@@ -63,8 +62,7 @@ $(document).ready(function() {
 	
 	// Only load if on home page.
 	if( $('#votd').length) {
-            loadNetText('votd');
+            loadNetText('votd','processNetResults');
 	}
-
 });
 

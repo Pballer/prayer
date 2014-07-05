@@ -70,4 +70,6 @@ class AddressForm(Form):
     zipcode = IntegerField('zipcode')#, validators = [validators.Regexp("^\d{5}(?:[-\s]\d{4})?$", message = "Must be a valid US zipcode")])
     directions = TextAreaField('directions', validators = [Length(min = 0, max = 500)])
 
-
+class BibleVerseForm(Form):
+    verse = TextField('verse', validators = [Required()])
+    spritz_verses = TextAreaField('spritz_verses', validators = [Required()])
